@@ -1,17 +1,25 @@
 import styled from "styled-components"
+import { Button } from "react-native-paper"
+import { SafeAreaView } from "react-native-safe-area-context"
 
-export const AuthView = styled.View`
+export const SafeArea = styled(SafeAreaView)`
   flex: 1;
-  background-color: #fff;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 `
 
-export const LogoImage = styled.Image`
-  height: 130px;
-  resize-mode: contain;
-`
+export const AuthScrollView = styled.ScrollView.attrs({
+  contentContainerStyle: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+})``
+
+export const AuthButton = styled(Button).attrs({
+  contentStyle: {
+    flexDirection: "row-reverse",
+    backgroundColor: "#5c58e4",
+  },
+})``
 
 export const AuthHeadline = styled.Text`
   font-size: 15px;

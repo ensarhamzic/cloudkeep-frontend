@@ -14,12 +14,12 @@ export const AuthScrollView = styled.ScrollView.attrs({
   },
 })``
 
-export const AuthButton = styled(Button).attrs({
+export const AuthButton = styled(Button).attrs((props) => ({
   contentStyle: {
     flexDirection: "row-reverse",
-    backgroundColor: "#5c58e4",
+    backgroundColor: props.theme.colors.logo.purple,
   },
-})``
+}))``
 
 export const AuthHeadline = styled.Text`
   font-size: 15px;
@@ -31,6 +31,6 @@ export const FormView = styled.View`
 `
 
 export const LinkText = styled.Text`
-  color: ${(props) => props.theme.colors.link.primary};
+  color: ${({ theme }) => theme.colors.link.primary};
   text-decoration: underline;
 `

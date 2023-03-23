@@ -1,13 +1,10 @@
 import React from "react"
 import {
   AuthHeadline,
-  FormView,
   LinkText,
   SafeArea,
   AuthScrollView,
-  AuthButton,
 } from "../components/auth.styles"
-import { TextInput } from "react-native-paper"
 import { Spacer } from "../../../components/Spacer.component"
 import { FullLogo } from "../../../components/FullLogo.component"
 import { LoginForm } from "../components/LoginForm.component"

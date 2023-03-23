@@ -1,4 +1,5 @@
 export const colors = {
+  red: "red",
   link: {
     primary: "#336fd6",
   },

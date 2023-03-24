@@ -7,4 +7,5 @@ export const colors = {
     purple: "#5c58e4",
     aqua: "#00c1cb",
   },
+  error: "#f13a59",
 }

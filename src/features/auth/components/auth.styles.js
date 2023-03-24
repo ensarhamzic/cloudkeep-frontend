@@ -14,6 +14,17 @@ export const AuthScrollView = styled.ScrollView.attrs({
   },
 })``
 
+export const ErrorView = styled.View`
+  color: ${({ theme }) => theme.colors.error};
+  flex-direction: row;
+  align-items: center;
+`
+
+export const ErrorText = styled.Text`
+  color: ${({ theme }) => theme.colors.error};
+  font-style: italic;
+`
+
 export const AuthButton = styled(Button).attrs((props) => ({
   contentStyle: {
     flexDirection: "row-reverse",

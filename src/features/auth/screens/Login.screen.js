@@ -22,7 +22,7 @@ export const LoginScreen = ({ navigation }) => {
         <Spacer position="top" size="large">
           <LinkText
             onPress={() => {
-              navigation.navigate("Register")
+              navigation.replace("Register")
             }}
           >
             Don't have an account? Sign Up

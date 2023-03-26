@@ -7,7 +7,7 @@ export const AuthContextProvider = ({ children }) => {
   const [token, setToken] = useState(null)
   const isAuth = !!user
 
-  const onLogin = ({ user, token }) => {
+  const onAuth = ({ user, token }) => {
     setUser(user)
     setToken(token)
   }
@@ -23,7 +23,7 @@ export const AuthContextProvider = ({ children }) => {
         isAuth,
         user,
         token,
-        onLogin,
+        onAuth,
         onLogout,
       }}
     >

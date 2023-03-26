@@ -2,15 +2,16 @@ import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
 import { TextInput } from "react-native-paper"
 import { Spacer } from "../../../components/Spacer.component"
-import { ErrorView, FormView, ErrorText } from "./auth.styles"
+import { FormView } from "./auth.styles"
 import { AuthButton } from "./auth.styles"
-import Icon from "react-native-vector-icons/MaterialIcons"
-import { useTheme } from "styled-components"
 import { loginRequest } from "../../../services/auth/auth.service"
+import { InputError } from "../../../components/InputError.component"
+import { useNavigation } from "@react-navigation/native"
 
 export const LoginForm = () => {
-  const theme = useTheme()
-  const { onLogin, isAuth } = useContext(AuthContext)
+  const navigation = useNavigation()
+
+  const { onAuth, user } = useContext(AuthContext)
   const [username, setUsername] = useState("")
   const [usernameError, setUsernameError] = useState(null)
   const [password, setPassword] = useState("")
@@ -18,8 +19,6 @@ export const LoginForm = () => {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [loginError, setLoginError] = useState(null)
-
-  console.log(isAuth)
 
   const signInHandler = () => {
     setFormSubmitted(true)
@@ -42,11 +41,16 @@ export const LoginForm = () => {
         setLoginError(null)
         const response = await loginRequest(username, password)
         if (response.error) setLoginError(response.message)
-        else onLogin(response)
+        else onAuth(response)
         setIsLoading(false)
       }
     })()
   }, [formSubmitted, usernameError, passwordError])
+
+  const userVerified = user && !user.verified
+  useEffect(() => {
+    if (userVerified) navigation.replace("VerifyAccount")
+  }, [userVerified])
 
   return (
     <FormView>
@@ -57,19 +61,7 @@ export const LoginForm = () => {
         error={usernameError}
         disabled={isLoading}
       />
-      {usernameError && (
-        <>
-          <Spacer position="top" size="medium">
-            <ErrorView>
-              <Icon name="error" size={25} color={theme.colors.error} />
-              <Spacer position="left" size="small">
-                <ErrorText>{usernameError}</ErrorText>
-              </Spacer>
-            </ErrorView>
-          </Spacer>
-          <Spacer size="medium" />
-        </>
-      )}
+      <InputError error={usernameError} />
       <Spacer position="top" size="medium">
         <TextInput
           onChangeText={setPassword}
@@ -79,18 +71,7 @@ export const LoginForm = () => {
           error={passwordError}
           disabled={isLoading}
         />
-        {passwordError && (
-          <>
-            <Spacer position="top" size="medium">
-              <ErrorView>
-                <Icon name="error" size={25} color={theme.colors.error} />
-                <Spacer position="left" size="small">
-                  <ErrorText>{passwordError}</ErrorText>
-                </Spacer>
-              </ErrorView>
-            </Spacer>
-          </>
-        )}
+        <InputError error={passwordError} />
       </Spacer>
       <Spacer position="top" size="large">
         <AuthButton
@@ -101,17 +82,7 @@ export const LoginForm = () => {
           {isLoading ? "Signing you in..." : "Sign In"}
         </AuthButton>
       </Spacer>
-      {loginError && (
-        <Spacer position="top" size="medium">
-          <ErrorView>
-            <Icon name="error" size={25} color={theme.colors.error} />
-
-            <Spacer position="left" size="small">
-              <ErrorText>{loginError}</ErrorText>
-            </Spacer>
-          </ErrorView>
-        </Spacer>
-      )}
+      <InputError error={loginError} />
     </FormView>
   )
 }

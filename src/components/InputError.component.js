@@ -1,0 +1,21 @@
+import React from "react"
+import { Spacer } from "./Spacer.component"
+import { ErrorView, ErrorText } from "../features/auth/components/auth.styles"
+import Icon from "react-native-vector-icons/MaterialIcons"
+import { useTheme } from "styled-components"
+
+export const InputError = ({ error }) => {
+  if (!error) return null
+
+  const theme = useTheme()
+  return (
+    <Spacer position="top" size="medium">
+      <ErrorView>
+        <Icon name="error" size={25} color={theme.colors.error} />
+        <Spacer position="left" size="small">
+          <ErrorText>{error}</ErrorText>
+        </Spacer>
+      </ErrorView>
+    </Spacer>
+  )
+}

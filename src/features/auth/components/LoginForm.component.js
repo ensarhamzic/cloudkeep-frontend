@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
 import { TextInput } from "react-native-paper"
 import { Spacer } from "../../../components/Spacer.component"
-import { FormView } from "./auth.styles"
+import { FormInput, FormView } from "./auth.styles"
 import { AuthButton } from "./auth.styles"
 import { loginRequest } from "../../../services/auth/auth.service"
 import { InputError } from "../../../components/InputError.component"
@@ -55,7 +55,7 @@ export const LoginForm = () => {
 
   return (
     <FormView>
-      <TextInput
+      <FormInput
         onChangeText={setUsername}
         value={username}
         label={"Username"}
@@ -64,7 +64,7 @@ export const LoginForm = () => {
       />
       <InputError error={usernameError} />
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           onChangeText={setPassword}
           value={password}
           secureTextEntry={true}

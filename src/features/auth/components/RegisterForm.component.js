@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FormView } from "./auth.styles"
-import { TextInput } from "react-native-paper"
+import { FormInput, FormView } from "./auth.styles"
 import { Spacer } from "../../../components/Spacer.component"
 import { AuthButton } from "./auth.styles"
 import { InputError } from "../../../components/InputError.component"
@@ -101,7 +100,7 @@ export const RegisterForm = () => {
 
   return (
     <FormView>
-      <TextInput
+      <FormInput
         label="First Name"
         onChangeText={setFirstName}
         value={firstName}
@@ -110,7 +109,7 @@ export const RegisterForm = () => {
       />
       <InputError error={firstNameError} />
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           label="Last Name"
           onChangeText={setLastName}
           value={lastName}
@@ -121,7 +120,7 @@ export const RegisterForm = () => {
       </Spacer>
 
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           label="Email"
           onChangeText={setEmail}
           value={email}
@@ -131,7 +130,7 @@ export const RegisterForm = () => {
         <InputError error={emailError} />
       </Spacer>
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           label="Username"
           onChangeText={setUsername}
           value={username}
@@ -141,7 +140,7 @@ export const RegisterForm = () => {
         <InputError error={usernameError} />
       </Spacer>
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           secureTextEntry={true}
           label="Password"
           onChangeText={setPassword}
@@ -152,7 +151,7 @@ export const RegisterForm = () => {
         <InputError error={passwordError} />
       </Spacer>
       <Spacer position="top" size="medium">
-        <TextInput
+        <FormInput
           secureTextEntry={true}
           label="Confirm Password"
           onChangeText={setConfirmPassword}

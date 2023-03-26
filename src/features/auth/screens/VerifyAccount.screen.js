@@ -8,7 +8,6 @@ import {
 import { AuthContext } from "../../../services/auth/authContext"
 import { FullLogo } from "../../../components/FullLogo.component"
 import { Spacer } from "../../../components/Spacer.component"
-import { Text } from "react-native"
 import { VerifyAccountForm } from "../components/VerifyAccountForm.component"
 
 export const VerifyAccountScreen = () => {

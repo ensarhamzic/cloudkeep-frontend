@@ -1,9 +1,11 @@
 import styled from "styled-components"
 import { Button } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
+import { TextInput } from "react-native-paper"
 
 export const SafeArea = styled(SafeAreaView)`
   flex: 1;
+  background-color: ${({ theme }) => theme.colors.white};
 `
 
 export const AuthScrollView = styled.ScrollView.attrs({
@@ -28,7 +30,7 @@ export const ErrorText = styled.Text`
 export const AuthButton = styled(Button).attrs((props) => ({
   contentStyle: {
     flexDirection: "row-reverse",
-    backgroundColor: props.theme.colors.logo.purple,
+    backgroundColor: props.theme.colors.brand.primary,
   },
 }))``
 
@@ -50,3 +52,9 @@ export const LinkText = styled.Text`
   color: ${({ theme }) => theme.colors.link.primary};
   text-decoration: underline;
 `
+
+export const FormInput = styled(TextInput).attrs((props) => ({
+  contentStyle: {
+    backgroundColor: props.theme.colors.veryLightGray,
+  },
+}))``

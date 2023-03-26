@@ -35,6 +35,7 @@ export const LoginForm = () => {
 
   useEffect(() => {
     ;(async () => {
+      if (isLoading) return
       setFormSubmitted(false)
       if (formSubmitted && !usernameError && !passwordError) {
         setIsLoading(true)
@@ -47,10 +48,10 @@ export const LoginForm = () => {
     })()
   }, [formSubmitted, usernameError, passwordError])
 
-  const userVerified = user && !user.verified
+  const notVerified = user?.verified === false
   useEffect(() => {
-    if (userVerified) navigation.replace("VerifyAccount")
-  }, [userVerified])
+    if (notVerified) navigation.replace("VerifyAccount")
+  }, [notVerified])
 
   return (
     <FormView>

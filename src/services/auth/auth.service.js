@@ -19,10 +19,23 @@ export const loginRequest = async (username, password) => {
 export const registerRequest = async (user) => {
   try {
     const response = await axios.post(`${API_URL}/auth/register`, user)
-    console.log("RESPONSE", response.data)
     return response.data
   } catch (error) {
-    console.log("ERR", error.response.data)
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}
+
+export const verifyEmailRequest = async (email, code) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/verify-email`, {
+      email,
+      code,
+    })
+    return response.data
+  } catch (error) {
     return {
       error: true,
       ...error.response.data,

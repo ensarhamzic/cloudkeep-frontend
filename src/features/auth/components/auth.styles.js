@@ -37,6 +37,11 @@ export const AuthHeadline = styled.Text`
   font-weight: bold;
 `
 
+export const AuthSubHeadline = styled.Text`
+  width: 80%;
+  font-size: 15px;
+`
+
 export const FormView = styled.View`
   width: 80%;
 `

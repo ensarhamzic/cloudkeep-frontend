@@ -6,9 +6,11 @@ import { Spacer } from "../../../components/Spacer.component"
 import { AuthButton } from "./auth.styles"
 import { InputError } from "../../../components/InputError.component"
 import { registerRequest } from "../../../services/auth/auth.service"
+import { useNavigation } from "@react-navigation/native"
 
 export const RegisterForm = () => {
-  const { onAuth } = useContext(AuthContext)
+  const { onAuth, user } = useContext(AuthContext)
+  const navigation = useNavigation()
 
   const [firstName, setFirstName] = useState("")
   const [firstNameError, setFirstNameError] = useState(null)
@@ -63,6 +65,7 @@ export const RegisterForm = () => {
 
   useEffect(() => {
     ;(async () => {
+      if (isLoading) return
       setFormSubmitted(false)
       const canSendRequest =
         formSubmitted &&
@@ -90,6 +93,11 @@ export const RegisterForm = () => {
       }
     })()
   }, [formSubmitted, usernameError, passwordError])
+
+  const notVerified = user?.verified === false
+  useEffect(() => {
+    if (notVerified) navigation.replace("VerifyAccount")
+  }, [notVerified])
 
   return (
     <FormView>
@@ -160,7 +168,7 @@ export const RegisterForm = () => {
           mode="contained"
           onPress={registerHandler}
         >
-          Sign Up
+          {isLoading ? "Signing you up..." : "Register"}
         </AuthButton>
       </Spacer>
       <InputError error={registerError} />

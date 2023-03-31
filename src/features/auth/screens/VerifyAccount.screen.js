@@ -19,7 +19,7 @@ export const VerifyAccountScreen = () => {
         <Spacer position="top" size="large">
           <AuthHeadline>Verify your account</AuthHeadline>
         </Spacer>
-        <Spacer position={"bottom"} size={"large"}>
+        <Spacer position="bottom" size="large">
           <AuthSubHeadline>
             Please enter code sent on {user.email}
           </AuthSubHeadline>

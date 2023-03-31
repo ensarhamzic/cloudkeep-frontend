@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback } from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { DriveScreen } from "../../features/drive/screens/Drive.screen"
 import {
@@ -26,17 +26,23 @@ const TAB_ICONS = {
   ),
 }
 
-const createScreenOptions = ({ route }) => {
-  const theme = useTheme()
-  const TabBarIcon = TAB_ICONS[route.name]
-  return {
-    tabBarIcon: ({ size, color }) => <TabBarIcon size={size} color={color} />,
-    tabBarActiveTintColor: theme.colors.brand.primary,
-    tabBarInactiveTintColor: theme.colors.darkGray,
-  }
-}
-
 export const AppNavigator = () => {
+  const theme = useTheme()
+
+  const createScreenOptions = useCallback(
+    ({ route }) => {
+      const TabBarIcon = TAB_ICONS[route.name]
+      return {
+        tabBarIcon: ({ size, color }) => (
+          <TabBarIcon size={size} color={color} />
+        ),
+        tabBarActiveTintColor: theme.colors.brand.primary,
+        tabBarInactiveTintColor: theme.colors.darkGray,
+      }
+    },
+    [theme]
+  )
+
   return (
     <Tab.Navigator screenOptions={createScreenOptions}>
       <Tab.Screen name="Drive" component={DriveScreen} />

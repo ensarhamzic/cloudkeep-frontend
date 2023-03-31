@@ -5,9 +5,9 @@ import Icon from "react-native-vector-icons/MaterialIcons"
 import { useTheme } from "styled-components"
 
 export const InputError = ({ error }) => {
+  const theme = useTheme()
   if (!error) return null
 
-  const theme = useTheme()
   return (
     <Spacer position="top" size="medium">
       <ErrorView>

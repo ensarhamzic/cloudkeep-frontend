@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import { Text, View } from "react-native"
+import { FlatList } from "react-native"
+import { Directory } from "../../../components/Directory.component"
 
 export const DriveScreen = () => {
   const { onDirectoriesLoad, directories } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
+  const [parentDirectory, setParentDirectory] = useState(null)
 
   useEffect(() => {
     ;(async () => {
@@ -18,10 +20,17 @@ export const DriveScreen = () => {
     })()
   }, [isLoading, token])
 
-  console.log(directories)
+  const filteredDirectories = directories.filter(
+    (dir) => dir.parentDirectory === parentDirectory
+  )
+
   return (
-    <View>
-      <Text>This is My drive screen</Text>
-    </View>
+    <FlatList
+      data={filteredDirectories}
+      renderItem={({ item }) => <Directory name={item.name} />}
+      keyExtractor={(item) => `${item.id}`}
+      showsHorizontalScrollIndicator={false}
+      numColumns={2}
+    />
   )
 }

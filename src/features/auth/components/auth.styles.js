@@ -1,7 +1,6 @@
 import styled from "styled-components"
-import { Button } from "react-native-paper"
+import { Button, TextInput } from "react-native-paper"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { TextInput } from "react-native-paper"
 
 export const SafeArea = styled(SafeAreaView)`
   flex: 1;

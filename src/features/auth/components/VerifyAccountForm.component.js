@@ -42,7 +42,7 @@ export const VerifyAccountForm = () => {
   return (
     <FormView>
       <TextInput
-        label={"Verification Code"}
+        label="Verification Code"
         value={code}
         onChangeText={setCode}
         error={codeError}

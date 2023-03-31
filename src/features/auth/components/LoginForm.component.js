@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
 import { TextInput } from "react-native-paper"
 import { Spacer } from "../../../components/Spacer.component"
-import { FormInput, FormView } from "./auth.styles"
-import { AuthButton } from "./auth.styles"
+import { FormInput, FormView, AuthButton } from "./auth.styles"
 import { loginRequest } from "../../../services/auth/auth.service"
 import { InputError } from "../../../components/InputError.component"
 import { useNavigation } from "@react-navigation/native"
@@ -42,7 +41,7 @@ export const LoginForm = () => {
         setLoginError(null)
         const response = await loginRequest(username, password)
         if (response.error) setLoginError(response.message)
-        else onAuth(response)
+        else await onAuth(response)
         setIsLoading(false)
       }
     })()

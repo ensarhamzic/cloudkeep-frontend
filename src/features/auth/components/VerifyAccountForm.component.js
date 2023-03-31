@@ -33,7 +33,7 @@ export const VerifyAccountForm = () => {
         setVerifyError(null)
         const response = await verifyEmailRequest(user.email, code)
         if (response.error) setVerifyError(response.message)
-        else onAuth(response)
+        else await onAuth(response)
         setIsLoading(false)
       }
     })()

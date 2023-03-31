@@ -37,7 +37,6 @@ const createScreenOptions = ({ route }) => {
 }
 
 export const AppNavigator = () => {
-  const theme = useTheme()
   return (
     <Tab.Navigator screenOptions={createScreenOptions}>
       <Tab.Screen name="Drive" component={DriveScreen} />

@@ -87,7 +87,7 @@ export const RegisterForm = () => {
         }
         const response = await registerRequest(user)
         if (response.error) setRegisterError(response.message)
-        else onAuth(response)
+        else await onAuth(response)
         setIsLoading(false)
       }
     })()

@@ -24,10 +24,20 @@ export const DriveScreen = () => {
     (dir) => dir.parentDirectory === parentDirectory
   )
 
+  const handleDirectoryPress = (id) => {
+    setParentDirectory(id)
+  }
+
   return (
     <FlatList
       data={filteredDirectories}
-      renderItem={({ item }) => <Directory name={item.name} />}
+      renderItem={({ item }) => (
+        <Directory
+          id={item.id}
+          name={item.name}
+          onDirectoryPress={handleDirectoryPress}
+        />
+      )}
       keyExtractor={(item) => `${item.id}`}
       showsHorizontalScrollIndicator={false}
       numColumns={2}

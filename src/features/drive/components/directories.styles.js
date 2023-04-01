@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-export const DirectoryView = styled.View`
+export const DirectoryTouchableOpacity = styled.TouchableOpacity`
   flex: 1;
   justify-content: center;
   align-items: center;

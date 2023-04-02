@@ -8,6 +8,7 @@ import {
   Ionicons,
 } from "@expo/vector-icons"
 import { useTheme } from "styled-components"
+import { DirectoryNavigator } from "./directory.navigator"
 
 const Tab = createBottomTabNavigator()
 
@@ -45,7 +46,7 @@ export const AppNavigator = () => {
 
   return (
     <Tab.Navigator screenOptions={createScreenOptions}>
-      <Tab.Screen name="Drive" component={DriveScreen} />
+      <Tab.Screen name="Drive" component={DirectoryNavigator} />
       <Tab.Screen name="Shared" component={DriveScreen} />
       <Tab.Screen name="Favorites" component={DriveScreen} />
       <Tab.Screen name="Settings" component={DriveScreen} />

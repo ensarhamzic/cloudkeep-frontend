@@ -8,19 +8,6 @@ import { getDirectories } from "../../services/directories/directories.service"
 const Stack = createStackNavigator()
 
 export const DirectoryNavigator = () => {
-  const { onDirectoriesLoad } = useContext(DirectoriesContext)
-  const { token } = useContext(AuthContext)
-  const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    ;(async () => {
-      if (isLoading || !token) return
-      const data = await getDirectories(token)
-      onDirectoriesLoad(data)
-      setIsLoading(false)
-    })()
-  }, [isLoading, token])
-
   return (
     <Stack.Navigator
       screenOptions={{

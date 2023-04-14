@@ -13,12 +13,17 @@ export const DirectoriesContextProvider = ({ children }) => {
     setDirectories([...directories, directory])
   }
 
+  const clearDirectories = () => {
+    setDirectories([])
+  }
+
   return (
     <DirectoriesContext.Provider
       value={{
         directories,
         onDirectoriesLoad,
         onDirectoryAdd,
+        clearDirectories,
       }}
     >
       {children}

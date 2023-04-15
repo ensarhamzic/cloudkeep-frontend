@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
-import { TextInput } from "react-native-paper"
 import { Spacer } from "../../../components/Spacer.component"
 import { FormInput, FormView, AuthButton } from "./auth.styles"
 import { loginRequest } from "../../../services/auth/auth.service"

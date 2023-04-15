@@ -1,6 +1,6 @@
 import React from "react"
 import { Spacer } from "./Spacer.component"
-import { ErrorView, ErrorText } from "../features/auth/components/auth.styles"
+import { ErrorView, ErrorText } from "../styles/auth.styles"
 import Icon from "react-native-vector-icons/MaterialIcons"
 import { useTheme } from "styled-components"
 

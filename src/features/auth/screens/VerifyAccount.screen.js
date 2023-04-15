@@ -4,7 +4,7 @@ import {
   AuthScrollView,
   AuthSubHeadline,
   SafeArea,
-} from "../components/auth.styles"
+} from "../../../styles/auth.styles"
 import { AuthContext } from "../../../services/auth/authContext"
 import { FullLogo } from "../../../components/FullLogo.component"
 import { Spacer } from "../../../components/Spacer.component"

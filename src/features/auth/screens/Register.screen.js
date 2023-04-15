@@ -4,7 +4,7 @@ import {
   AuthScrollView,
   LinkText,
   SafeArea,
-} from "../components/auth.styles"
+} from "../../../styles/auth.styles"
 import { Spacer } from "../../../components/Spacer.component"
 import { FullLogo } from "../../../components/FullLogo.component"
 import { RegisterForm } from "../components/RegisterForm.component"

@@ -12,25 +12,23 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [directoryList, setDirectoryList] = useState([])
   const directoryId = route?.params?.directoryId || null
-  const directory = directories.find((dir) => dir.id === directoryId)
   const directoriesLength = directories.length
-  console.log("DIRECTORYD ID", directoryId)
 
   useEffect(() => {
     clearDirectories()
     setIsLoaded(false)
-    // console.log("CLEAR DIRS", directoryId)
-    // console.log()
+    setDirectoryList((prevList) => {
+      const index = prevList.indexOf(directoryId)
+      if (index === -1) return [...prevList, directoryId]
+      return prevList.slice(0, index + 1)
+    })
   }, [directoryId])
 
   useEffect(() => {
     ;(async () => {
-      // console.log("isLoading: ", isLoading)
-      // console.log("isLoaded: ", isLoaded)
-      // console.log()
       if (isLoading || !token || isLoaded) return
-      console.log("slanje zahteva")
       setIsLoading(true)
       const data = await getDirectories(token, directoryId)
       onDirectoriesLoad(data)
@@ -46,7 +44,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   useEffect(() => {
     const backButtonHandler = () => {
       navigation.navigate("Directory", {
-        directoryId: directory?.parentDirectory,
+        directoryId: directoryList[directoryList.length - 2],
       })
       return true
     }
@@ -60,7 +58,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   })
 
   const loadingContent = (
-    <ActivityIndicator animating={true} color="#000" size="large" />
+    <ActivityIndicator animating color="#000" size="large" />
   )
 
   return (

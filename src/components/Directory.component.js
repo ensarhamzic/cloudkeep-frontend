@@ -3,7 +3,7 @@ import { Entypo } from "@expo/vector-icons"
 import {
   DirectoryName,
   DirectoryTouchableOpacity,
-} from "../features/drive/components/directories.styles"
+} from "../styles/directories.styles"
 
 export const Directory = ({ id, name, onDirectoryPress }) => {
   const handleDirectoryPress = () => {

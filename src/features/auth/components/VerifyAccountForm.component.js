@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
-import { AuthButton, FormView } from "./auth.styles"
+import { AuthButton, FormView } from "../../../styles/auth.styles"
 import { TextInput } from "react-native-paper"
 import { InputError } from "../../../components/InputError.component"
 import { Spacer } from "../../../components/Spacer.component"

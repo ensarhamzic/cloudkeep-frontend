@@ -1,3 +1,4 @@
+import React from "react"
 import { ThemeProvider } from "styled-components"
 import { theme } from "./src/infrastructure/theme"
 import { Navigation } from "./src/infrastructure/navigation"

@@ -42,3 +42,23 @@ export const verifyEmailRequest = async (email, code) => {
     }
   }
 }
+
+export const verifyTokenRequest = async (token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/auth/verify-token`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}

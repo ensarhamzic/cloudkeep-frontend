@@ -5,6 +5,7 @@ import { FlatList, BackHandler, Text } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
+import { FloatingMenu } from "../components/FloatingMenu.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories } =
@@ -80,6 +81,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
           numColumns={2}
         />
       )}
+      <FloatingMenu />
     </>
   )
 }

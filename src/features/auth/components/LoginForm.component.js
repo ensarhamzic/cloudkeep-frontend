@@ -56,7 +56,7 @@ export const LoginForm = () => {
       <FormInput
         onChangeText={setUsername}
         value={username}
-        label={"Username"}
+        label="Username"
         error={usernameError}
         disabled={isLoading}
       />
@@ -65,7 +65,7 @@ export const LoginForm = () => {
         <FormInput
           onChangeText={setPassword}
           value={password}
-          secureTextEntry={true}
+          secureTextEntry
           label="Password"
           error={passwordError}
           disabled={isLoading}

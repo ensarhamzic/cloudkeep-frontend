@@ -10,7 +10,8 @@ export const DirectoriesContextProvider = ({ children }) => {
   }
 
   const onDirectoryAdd = (directory) => {
-    setDirectories([...directories, directory])
+    // console.log(directory)
+    setDirectories((prevDirs) => [...prevDirs, directory])
   }
 
   const clearDirectories = () => {

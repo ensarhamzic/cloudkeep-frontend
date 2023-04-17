@@ -1,6 +1,6 @@
 import React from "react"
-import { ModalView } from "../styles/ui.styles"
 import { Modal } from "react-native"
+import { InnerModalView, ModalView } from "../styles/ui.styles"
 
 export const AppModal = ({ children, opened, onClose }) => {
   return (
@@ -10,7 +10,9 @@ export const AppModal = ({ children, opened, onClose }) => {
       visible={opened}
       onRequestClose={onClose}
     >
-      <ModalView>{children}</ModalView>
+      <ModalView>
+        <InnerModalView>{children}</InnerModalView>
+      </ModalView>
     </Modal>
   )
 }

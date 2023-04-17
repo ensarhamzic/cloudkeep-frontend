@@ -21,3 +21,26 @@ export const getDirectories = async (token, directoryId) => {
     }
   }
 }
+
+export const createDirectory = async (token, name, parentDirectoryId) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/directories`,
+      {
+        name,
+        parentDirectoryId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}

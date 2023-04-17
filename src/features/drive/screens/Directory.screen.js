@@ -1,15 +1,26 @@
 import React, { useContext, useEffect, useState } from "react"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FlatList, BackHandler, Text, Button } from "react-native"
+import { FlatList, BackHandler, Text } from "react-native"
 import { Directory } from "../../../components/Directory.component"
-import { getDirectories } from "../../../services/directories/directories.service"
+import {
+  getDirectories,
+  createDirectory,
+} from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AppModal } from "../../../ui/AppModal.component"
+import { HorizontalLine } from "../../../styles/directories.styles"
+import { FormInput } from "../../../styles/auth.styles"
+import { Spacer } from "../../../components/Spacer.component"
+import {
+  AcceptButton,
+  CancelButton,
+  ModalActionsView,
+} from "../../../styles/ui.styles"
 
 export const DirectoryScreen = ({ route, navigation }) => {
-  const { directories, onDirectoriesLoad, clearDirectories } =
+  const { directories, onDirectoriesLoad, clearDirectories, onDirectoryAdd } =
     useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
@@ -17,6 +28,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [directoryList, setDirectoryList] = useState([])
   const directoryId = route?.params?.directoryId || null
   const directoriesLength = directories.length
+
+  const [newDirectoryName, setNewDirectoryName] = useState("")
 
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
 
@@ -69,14 +82,40 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setNewDirModalOpened(true)
   }
 
+  const createNewDirectory = async () => {
+    const data = await createDirectory(token, newDirectoryName, directoryId)
+    if (data.error) {
+      return
+    }
+    onDirectoryAdd(data.data)
+    setNewDirModalOpened(false)
+    setNewDirectoryName("")
+  }
+
   return (
     <>
       <AppModal
         opened={newDirModalOpened}
         onClose={() => setNewDirModalOpened(false)}
       >
-        <Text>Modal</Text>
-        <Button title="Close" onPress={() => setNewDirModalOpened(false)} />
+        <Text>Create new directory</Text>
+        <HorizontalLine />
+        <FormInput
+          placeholder="Directory name"
+          onChangeText={setNewDirectoryName}
+          value={newDirectoryName}
+          label="Directory name"
+        />
+        <Spacer size="large">
+          <ModalActionsView>
+            <AcceptButton onPress={createNewDirectory}>
+              <Text>Create</Text>
+            </AcceptButton>
+            <CancelButton onPress={() => setNewDirModalOpened(false)}>
+              <Text>Close</Text>
+            </CancelButton>
+          </ModalActionsView>
+        </Spacer>
       </AppModal>
       {isLoading && loadingContent}
       {!isLoading && directories.length === 0 && <Text>No directories</Text>}
@@ -95,7 +134,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
           numColumns={2}
         />
       )}
-      <FloatingMenu onNewDirClick={newDirClickHandler} />
+      <FloatingMenu
+        modalOpened={newDirModalOpened}
+        onNewDirClick={newDirClickHandler}
+      />
     </>
   )
 }

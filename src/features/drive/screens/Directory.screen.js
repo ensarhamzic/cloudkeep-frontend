@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FlatList, BackHandler, Text } from "react-native"
+import { FlatList, BackHandler, Text, Button } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
+import { AppModal } from "../../../ui/AppModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories } =
@@ -16,6 +17,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [directoryList, setDirectoryList] = useState([])
   const directoryId = route?.params?.directoryId || null
   const directoriesLength = directories.length
+
+  const [newDirModalOpened, setNewDirModalOpened] = useState(false)
 
   useEffect(() => {
     clearDirectories()
@@ -62,8 +65,19 @@ export const DirectoryScreen = ({ route, navigation }) => {
     <ActivityIndicator animating color="#000" size="large" />
   )
 
+  const newDirClickHandler = () => {
+    setNewDirModalOpened(true)
+  }
+
   return (
     <>
+      <AppModal
+        opened={newDirModalOpened}
+        onClose={() => setNewDirModalOpened(false)}
+      >
+        <Text>Modal</Text>
+        <Button title="Close" onPress={() => setNewDirModalOpened(false)} />
+      </AppModal>
       {isLoading && loadingContent}
       {!isLoading && directories.length === 0 && <Text>No directories</Text>}
       {!isLoading && directories.length > 0 && (
@@ -81,7 +95,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
           numColumns={2}
         />
       )}
-      <FloatingMenu />
+      <FloatingMenu onNewDirClick={newDirClickHandler} />
     </>
   )
 }

@@ -13,14 +13,14 @@ import {
 import { useTheme } from "styled-components"
 import { TouchableOpacity, Text } from "react-native"
 
-export const FloatingMenu = () => {
+export const FloatingMenu = ({ onNewDirClick }) => {
   const [isOpened, setIsOpened] = useState(false)
   const theme = useTheme()
   return (
     <FloatingMenuView>
       {isOpened && (
         <AddMenuView>
-          <AddItemButton>
+          <AddItemButton onPress={onNewDirClick}>
             <FontAwesome5
               name="folder-plus"
               size={35}

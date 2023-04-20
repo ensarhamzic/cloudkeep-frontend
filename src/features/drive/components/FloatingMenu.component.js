@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import {
   Ionicons,
   FontAwesome5,
@@ -13,11 +13,15 @@ import {
 import { useTheme } from "styled-components"
 import { TouchableOpacity, Text } from "react-native"
 
-export const FloatingMenu = ({ modalOpened, onNewDirClick }) => {
-  const [isOpened, setIsOpened] = useState(false)
+export const FloatingMenu = ({
+  opened,
+  modalOpened,
+  onNewDirClick,
+  onToggle,
+}) => {
   const theme = useTheme()
 
-  const canBeRendered = !modalOpened && isOpened
+  const canBeRendered = !modalOpened && opened
   return (
     <FloatingMenuView>
       {canBeRendered && (
@@ -41,7 +45,7 @@ export const FloatingMenu = ({ modalOpened, onNewDirClick }) => {
           </AddItemButton>
         </AddMenuView>
       )}
-      <TouchableOpacity onPress={() => setIsOpened((prev) => !prev)}>
+      <TouchableOpacity onPress={onToggle}>
         {canBeRendered ? (
           <Ionicons
             name="close-circle"

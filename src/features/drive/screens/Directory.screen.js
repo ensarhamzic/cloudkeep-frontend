@@ -9,15 +9,7 @@ import {
 } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
-import { AppModal } from "../../../ui/AppModal.component"
-import { HorizontalLine } from "../../../styles/directories.styles"
-import { FormInput } from "../../../styles/auth.styles"
-import { Spacer } from "../../../components/Spacer.component"
-import {
-  AcceptButton,
-  CancelButton,
-  ModalActionsView,
-} from "../../../styles/ui.styles"
+import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories, onDirectoryAdd } =
@@ -29,8 +21,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const directoryId = route?.params?.directoryId || null
   const directoriesLength = directories.length
 
-  const [newDirectoryName, setNewDirectoryName] = useState("")
-
+  const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
 
   useEffect(() => {
@@ -79,44 +70,27 @@ export const DirectoryScreen = ({ route, navigation }) => {
   )
 
   const newDirClickHandler = () => {
+    setFloatingMenuOpened(false)
     setNewDirModalOpened(true)
   }
 
-  const createNewDirectory = async () => {
-    const data = await createDirectory(token, newDirectoryName, directoryId)
+  const createNewDirectory = async (newDirName) => {
+    const data = await createDirectory(token, newDirName, directoryId)
     if (data.error) {
       return
     }
     onDirectoryAdd(data.data)
     setNewDirModalOpened(false)
-    setNewDirectoryName("")
+    // setNewDirectoryName("")
   }
 
   return (
     <>
-      <AppModal
+      <AddDirectoryModal
         opened={newDirModalOpened}
         onClose={() => setNewDirModalOpened(false)}
-      >
-        <Text>Create new directory</Text>
-        <HorizontalLine />
-        <FormInput
-          placeholder="Directory name"
-          onChangeText={setNewDirectoryName}
-          value={newDirectoryName}
-          label="Directory name"
-        />
-        <Spacer size="large">
-          <ModalActionsView>
-            <AcceptButton onPress={createNewDirectory}>
-              <Text>Create</Text>
-            </AcceptButton>
-            <CancelButton onPress={() => setNewDirModalOpened(false)}>
-              <Text>Close</Text>
-            </CancelButton>
-          </ModalActionsView>
-        </Spacer>
-      </AppModal>
+        onAdd={createNewDirectory}
+      />
       {isLoading && loadingContent}
       {!isLoading && directories.length === 0 && <Text>No directories</Text>}
       {!isLoading && directories.length > 0 && (
@@ -136,7 +110,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
       )}
       <FloatingMenu
         modalOpened={newDirModalOpened}
+        opened={floatingMenuOpened}
         onNewDirClick={newDirClickHandler}
+        onToggle={() => setFloatingMenuOpened((prev) => !prev)}
       />
     </>
   )

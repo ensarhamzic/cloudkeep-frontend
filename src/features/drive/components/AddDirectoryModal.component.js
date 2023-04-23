@@ -17,6 +17,12 @@ export const AddDirectoryModal = ({ opened, onClose, onAdd }) => {
     onAdd(newDirectoryName)
     setNewDirectoryName("")
   }
+
+  const onModalClose = () => {
+    setNewDirectoryName("")
+    onClose()
+  }
+
   return (
     <AppModal opened={opened} onClose={onClose}>
       <Text>Create new directory</Text>
@@ -29,12 +35,12 @@ export const AddDirectoryModal = ({ opened, onClose, onAdd }) => {
       />
       <Spacer size="large">
         <ModalActionsView>
+          <CancelButton onPress={onModalClose}>
+            <Text>Cancel</Text>
+          </CancelButton>
           <AcceptButton onPress={addDirHandler}>
             <Text>Create</Text>
           </AcceptButton>
-          <CancelButton onPress={onClose}>
-            <Text>Close</Text>
-          </CancelButton>
         </ModalActionsView>
       </Spacer>
     </AppModal>

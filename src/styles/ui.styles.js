@@ -18,7 +18,8 @@ export const InnerModalView = styled.View`
 
 export const ModalActionsView = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10px;
   align-items: center;
   padding: 10px;
 `
@@ -34,6 +35,9 @@ export const AcceptButton = styled(Button).attrs((props) => ({
 
 export const CancelButton = styled(Button).attrs((props) => ({
   contentStyle: {
-    backgroundColor: props.theme.colors.brand.secondary,
+    backgroundColor: props.theme.colors.error,
+  },
+  labelStyle: {
+    color: props.theme.colors.white,
   },
 }))``

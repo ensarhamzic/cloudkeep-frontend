@@ -3,16 +3,13 @@ import { DirectoriesContext } from "../../../services/directories/directoriesCon
 import { AuthContext } from "../../../services/auth/authContext"
 import { FlatList, BackHandler, Text } from "react-native"
 import { Directory } from "../../../components/Directory.component"
-import {
-  getDirectories,
-  createDirectory,
-} from "../../../services/directories/directories.service"
+import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
-  const { directories, onDirectoriesLoad, clearDirectories, onDirectoryAdd } =
+  const { directories, onDirectoriesLoad, clearDirectories } =
     useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
@@ -74,14 +71,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setNewDirModalOpened(true)
   }
 
-  const createNewDirectory = async (newDirName) => {
-    const data = await createDirectory(token, newDirName, directoryId)
-    if (data.error) {
-      return
-    }
-    onDirectoryAdd(data.data)
+  const onNewDirectoryCreated = () => {
     setNewDirModalOpened(false)
-    // setNewDirectoryName("")
   }
 
   return (
@@ -89,7 +80,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
       <AddDirectoryModal
         opened={newDirModalOpened}
         onClose={() => setNewDirModalOpened(false)}
-        onAdd={createNewDirectory}
+        onAdd={onNewDirectoryCreated}
+        parentDirectoryId={directoryId}
       />
       {isLoading && loadingContent}
       {!isLoading && directories.length === 0 && <Text>No directories</Text>}

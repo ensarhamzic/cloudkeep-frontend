@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Button } from "react-native-paper"
+import { Button, ActivityIndicator } from "react-native-paper"
 
 export const ModalView = styled.View`
   flex: 1;
@@ -41,3 +41,13 @@ export const CancelButton = styled(Button).attrs((props) => ({
     color: props.theme.colors.white,
   },
 }))``
+
+export const CenteredActivityIndicator = styled(ActivityIndicator).attrs(
+  () => ({
+    size: 100,
+  })
+)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+`

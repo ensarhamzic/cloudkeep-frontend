@@ -56,9 +56,6 @@ export const verifyTokenRequest = async (token) => {
     )
     return response.data
   } catch (error) {
-    return {
-      error: true,
-      ...error.response.data,
-    }
+    return { error: true, ...error?.response?.data }
   }
 }

@@ -7,6 +7,7 @@ import { getDirectories } from "../../../services/directories/directories.servic
 import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
+import * as DocumentPicker from "expo-document-picker"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories } =
@@ -75,6 +76,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setNewDirModalOpened(false)
   }
 
+  const uploadClickHandler = async () => {
+    setFloatingMenuOpened(false)
+    const result = await DocumentPicker.getDocumentAsync({
+      type: "*/*",
+      copyToCacheDirectory: true,
+      multiple: true,
+    })
+    console.log(result)
+  }
+
   return (
     <>
       <AddDirectoryModal
@@ -104,6 +115,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
         modalOpened={newDirModalOpened}
         opened={floatingMenuOpened}
         onNewDirClick={newDirClickHandler}
+        onUploadClick={uploadClickHandler}
         onToggle={() => setFloatingMenuOpened((prev) => !prev)}
       />
     </>

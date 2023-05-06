@@ -17,6 +17,7 @@ export const FloatingMenu = ({
   opened,
   modalOpened,
   onNewDirClick,
+  onUploadClick,
   onToggle,
 }) => {
   const theme = useTheme()
@@ -35,7 +36,7 @@ export const FloatingMenu = ({
             <Text>New directory</Text>
           </AddItemButton>
           <HorizontalLine />
-          <AddItemButton>
+          <AddItemButton onPress={onUploadClick}>
             <MaterialCommunityIcons
               name="file-plus"
               size={35}

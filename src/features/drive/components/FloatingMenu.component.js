@@ -3,6 +3,7 @@ import {
   Ionicons,
   FontAwesome5,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons"
 import {
   AddItemButton,
@@ -17,7 +18,8 @@ export const FloatingMenu = ({
   opened,
   modalOpened,
   onNewDirClick,
-  onUploadClick,
+  onUploadMediaClick,
+  onUploadFileClick,
   onToggle,
 }) => {
   const theme = useTheme()
@@ -36,7 +38,16 @@ export const FloatingMenu = ({
             <Text>New directory</Text>
           </AddItemButton>
           <HorizontalLine />
-          <AddItemButton onPress={onUploadClick}>
+          <AddItemButton onPress={onUploadMediaClick}>
+            <MaterialIcons
+              name="perm-media"
+              size={35}
+              color={theme.colors.darkGray}
+            />
+            <Text>Upload media</Text>
+          </AddItemButton>
+          <HorizontalLine />
+          <AddItemButton onPress={onUploadFileClick}>
             <MaterialCommunityIcons
               name="file-plus"
               size={35}

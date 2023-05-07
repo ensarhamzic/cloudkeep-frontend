@@ -8,6 +8,9 @@ import { ActivityIndicator } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 import * as DocumentPicker from "expo-document-picker"
+import * as ImagePicker from "expo-image-picker"
+import { API_URL } from "../../../../env"
+import axios from "axios"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories } =
@@ -76,14 +79,46 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setNewDirModalOpened(false)
   }
 
-  const uploadClickHandler = async () => {
+  const uploadMediaHandler = async () => {
     setFloatingMenuOpened(false)
-    const result = await DocumentPicker.getDocumentAsync({
-      type: "*/*",
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsMultipleSelection: true,
+    })
+
+    console.log(result)
+  }
+
+  const uploadFileHandler = async () => {
+    setFloatingMenuOpened(false)
+    const file = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
       multiple: true,
     })
-    console.log(result)
+
+    const formData = new FormData()
+    formData.append("file", {
+      uri: file.uri,
+      type: file.mimeType,
+      name: file.name,
+    })
+    formData.append("name", "ensar")
+
+    try {
+      const response = await axios.post(
+        "http://192.168.1.4:8080/directory/1/upload",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+
+      console.log(response.data)
+    } catch (error) {
+      console.log(error.response.data)
+    }
   }
 
   return (
@@ -115,7 +150,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
         modalOpened={newDirModalOpened}
         opened={floatingMenuOpened}
         onNewDirClick={newDirClickHandler}
-        onUploadClick={uploadClickHandler}
+        onUploadMediaClick={uploadMediaHandler}
+        onUploadFileClick={uploadFileHandler}
         onToggle={() => setFloatingMenuOpened((prev) => !prev)}
       />
     </>

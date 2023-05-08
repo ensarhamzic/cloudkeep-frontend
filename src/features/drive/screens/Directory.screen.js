@@ -11,6 +11,8 @@ import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
 import { API_URL } from "../../../../env"
 import axios from "axios"
+// import { ref, getDownloadURL } from "firebase/storage"
+// import { storage } from "../../../../config"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, onDirectoriesLoad, clearDirectories } =
@@ -24,6 +26,19 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
+
+  // example usage of firebase storage
+  // useEffect(() => {
+  //   ;(async () => {
+  //     const fileUrl = await getDownloadURL(
+  //       ref(
+  //         storage,
+  //         "1683585148637-1670788474426_1670788464058_0_ffdsfsdf_Noise_Remove-Quality_Enhance_x1.jpg"
+  //       )
+  //     )
+  //     console.log(fileUrl)
+  //   })()
+  // }, [])
 
   useEffect(() => {
     clearDirectories()
@@ -105,7 +120,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     try {
       const response = await axios.post(
-        "http://192.168.1.4:8080/directory/1/upload",
+        `http://${API_URL}/directory/1/upload`,
         formData,
         {
           headers: {

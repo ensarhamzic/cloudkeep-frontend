@@ -31,10 +31,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   // useEffect(() => {
   //   ;(async () => {
   //     const fileUrl = await getDownloadURL(
-  //       ref(
-  //         storage,
-  //         "1683585148637-1670788474426_1670788464058_0_ffdsfsdf_Noise_Remove-Quality_Enhance_x1.jpg"
-  //       )
+  //       ref(storage, "48907b03-286b-4fc6-b534-494b17d42586")
   //     )
   //     console.log(fileUrl)
   //   })()
@@ -117,10 +114,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
       name: file.name,
     })
     formData.append("name", "ensar")
+    formData.append("directoryId", directoryId)
 
     try {
       const response = await axios.post(
-        `http://${API_URL}/directory/1/upload`,
+        `http://${API_URL}/directory/upload`,
         formData,
         {
           headers: {

@@ -11,6 +11,7 @@ import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
 import { API_URL } from "../../../../env"
 import axios from "axios"
+import { uploadFile } from "../../../services/files/files.service"
 // import { ref, getDownloadURL } from "firebase/storage"
 // import { storage } from "../../../../config"
 
@@ -107,31 +108,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
       multiple: true,
     })
 
-    const formData = new FormData()
-    formData.append("file", {
-      uri: file.uri,
-      type: file.mimeType,
-      name: file.name,
-    })
-    formData.append("name", "ensar")
-    formData.append("directoryId", directoryId)
+    if (file.type === "cancel") return
 
-    try {
-      const response = await axios.post(
-        `http://${API_URL}/directory/upload`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-
-      console.log(response.data)
-    } catch (error) {
-      console.log(error.response.data)
-    }
+    const response = await uploadFile(token, file, directoryId)
+    console.log(response)
   }
 
   return (

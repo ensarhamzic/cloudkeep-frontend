@@ -11,7 +11,7 @@ import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
 import { API_URL } from "../../../../env"
 import axios from "axios"
-import { uploadFile } from "../../../services/files/files.service"
+import { uploadFile, uploadMedia } from "../../../services/files/files.service"
 // import { ref, getDownloadURL } from "firebase/storage"
 // import { storage } from "../../../../config"
 
@@ -95,10 +95,14 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const uploadMediaHandler = async () => {
     setFloatingMenuOpened(false)
     const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
     })
 
-    console.log(result)
+    if (result.canceled) return
+
+    const response = await uploadMedia(token, result.assets, directoryId)
+    console.log(response)
   }
 
   const uploadFileHandler = async () => {

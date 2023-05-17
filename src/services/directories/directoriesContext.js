@@ -4,24 +4,29 @@ export const DirectoriesContext = createContext()
 
 export const DirectoriesContextProvider = ({ children }) => {
   const [directories, setDirectories] = useState([])
+  const [files, setFiles] = useState([])
 
-  const onDirectoriesLoad = (directories) => {
-    setDirectories(directories)
+  const onDirectoriesLoad = (data) => {
+    setDirectories(data.directories)
+    setFiles(data.files)
   }
 
   const onDirectoryAdd = (directory) => {
-    // console.log(directory)
     setDirectories((prevDirs) => [...prevDirs, directory])
+
+    console.log(files)
   }
 
   const clearDirectories = () => {
     setDirectories([])
+    setFiles([])
   }
 
   return (
     <DirectoriesContext.Provider
       value={{
         directories,
+        files,
         onDirectoriesLoad,
         onDirectoryAdd,
         clearDirectories,

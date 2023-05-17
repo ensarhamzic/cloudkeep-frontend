@@ -9,14 +9,13 @@ import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
-import { API_URL } from "../../../../env"
-import axios from "axios"
 import { uploadFile, uploadMedia } from "../../../services/files/files.service"
+import { File } from "../../../components/File.component"
 // import { ref, getDownloadURL } from "firebase/storage"
 // import { storage } from "../../../../config"
 
 export const DirectoryScreen = ({ route, navigation }) => {
-  const { directories, onDirectoriesLoad, clearDirectories } =
+  const { directories, files, onDirectoriesLoad, clearDirectories } =
     useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
@@ -141,6 +140,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
           keyExtractor={(item) => `${item.id}`}
           showsHorizontalScrollIndicator={false}
           numColumns={2}
+        />
+      )}
+      {!isLoading && files.length > 0 && (
+        <FlatList
+          data={files}
+          renderItem={({ item }) => <File file={item} />}
+          keyExtractor={(item) => `${item.id}`}
+          showsHorizontalScrollIndicator={false}
+          numColumns={3}
         />
       )}
       <FloatingMenu

@@ -11,8 +11,12 @@ export const Directory = ({ id, name, onDirectoryPress }) => {
   }
 
   return (
-    <DirectoryTouchableOpacity onPress={handleDirectoryPress}>
-      <Entypo name="folder" size={120} color="gray" />
+    <DirectoryTouchableOpacity onPress={id > 0 ? handleDirectoryPress : null}>
+      <Entypo
+        name="folder"
+        size={120}
+        color={id > 0 ? "gray" : "transparent"}
+      />
       <DirectoryName>{name}</DirectoryName>
     </DirectoryTouchableOpacity>
   )

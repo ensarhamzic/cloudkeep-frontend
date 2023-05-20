@@ -1,66 +1,68 @@
 import axios from "axios"
 import { API_URL } from "../../../env"
+import { ref, uploadBytesResumable } from "firebase/storage"
+import { storage } from "../../../config"
+import uuid from "react-native-uuid"
 
-export const uploadFile = async (token, file, directoryId) => {
+export const uploadFiles = async (token, files, directoryId) => {
   try {
-    const formData = new FormData()
-    console.log(file)
-    formData.append("file", {
-      uri: file.uri,
-      type: file.mimeType,
-      name: file.name,
-    })
-    if (directoryId) formData.append("directoryId", directoryId)
-    const response = await axios.post(`${API_URL}/directory/upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    })
-    return response.data
-  } catch (error) {
-    return {
-      error: true,
-      ...error.response.data,
-    }
-  }
-}
+    const uploadedFiles = []
 
-export const uploadMedia = async (token, assets, directoryId) => {
-  try {
-    const formData = new FormData()
+    for (const file of files) {
+      const filePath = uuid.v4()
+      const storageRef = ref(storage, filePath)
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.onload = function () {
+          resolve(xhr.response)
+        }
 
-    for (const asset of assets) {
-      const localUri = asset.uri
-      const filename = localUri.split("/").pop()
+        xhr.onerror = function (e) {
+          console.log(e)
+          reject(new TypeError("Network request failed"))
+        }
 
-      console.log(asset)
-      // Infer the type of the image
-      const assetType = /\.(\w+)$/.exec(filename)[1]
-      const type =
-        asset.type === "image" ? `image/${assetType}` : `video/${assetType}`
-
-      console.log("TYPE", type)
-
-      formData.append("files", {
-        uri: localUri,
-        type,
-        name: filename,
+        xhr.responseType = "blob"
+        xhr.open("GET", file.uri, true)
+        xhr.send()
       })
-    }
 
-    if (directoryId) formData.append("directoryId", directoryId)
-    const response = await axios.post(
-      `${API_URL}/directory/upload/media`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+      const uploadTask = uploadBytesResumable(storageRef, blob)
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          console.log("Upload is " + Math.round(progress) + "% done")
         },
-      }
-    )
-    return response.data
+        (error) => {
+          console.log("ERROR", error)
+        },
+        async () => {
+          uploadedFiles.push({
+            name: file.name || filePath,
+            path: filePath,
+          })
+
+          if (uploadedFiles.length === files.length) {
+            const data = {
+              files: uploadedFiles,
+              directoryId,
+            }
+            const response = await axios.post(
+              `${API_URL}/directory/upload`,
+              data,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+            return response.data
+          }
+        }
+      )
+    }
   } catch (error) {
     return {
       error: true,

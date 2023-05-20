@@ -9,10 +9,10 @@ import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
-import { uploadFile, uploadMedia } from "../../../services/files/files.service"
+import { uploadFiles } from "../../../services/files/files.service"
 import { File } from "../../../components/File.component"
-// import { ref, getDownloadURL } from "firebase/storage"
-// import { storage } from "../../../../config"
+import { ref, getDownloadURL } from "firebase/storage"
+import { storage } from "../../../../config"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const { directories, files, onDirectoriesLoad, clearDirectories } =
@@ -30,6 +30,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   // example usage of firebase storage
   // useEffect(() => {
   //   ;(async () => {
+  //     console.log("storage", storage)
   //     const fileUrl = await getDownloadURL(
   //       ref(storage, "48907b03-286b-4fc6-b534-494b17d42586")
   //     )
@@ -100,7 +101,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (result.canceled) return
 
-    const response = await uploadMedia(token, result.assets, directoryId)
+    const response = await uploadFiles(token, result.assets, directoryId)
     console.log(response)
   }
 
@@ -113,9 +114,19 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (file.type === "cancel") return
 
-    const response = await uploadFile(token, file, directoryId)
+    const response = await uploadFiles(token, [file], directoryId)
     console.log(response)
   }
+
+  const dirs = [
+    ...directories.map((directory) => ({ ...directory, type: "directory" })),
+  ]
+  if (dirs.length % 2 === 1) dirs.push({ id: -1, name: "", type: "directory" })
+
+  const fs = [...files.map((file) => ({ ...file, type: "file" }))]
+  if (fs.length % 2 === 1) files.push({ id: -1, name: "", type: "file" })
+
+  const content = [...dirs, ...fs]
 
   return (
     <>
@@ -126,29 +137,24 @@ export const DirectoryScreen = ({ route, navigation }) => {
         parentDirectoryId={directoryId}
       />
       {isLoading && loadingContent}
-      {!isLoading && directories.length === 0 && <Text>No directories</Text>}
-      {!isLoading && directories.length > 0 && (
+      {!isLoading && content.length === 0 && <Text>No content</Text>}
+      {!isLoading && content.length > 0 && (
         <FlatList
-          data={directories}
-          renderItem={({ item }) => (
-            <Directory
-              id={item.id}
-              name={item.name}
-              onDirectoryPress={handleDirectoryPress}
-            />
-          )}
+          data={content}
+          renderItem={({ item }) => {
+            if (item.type === "directory")
+              return (
+                <Directory
+                  id={item.id}
+                  name={item.name}
+                  onDirectoryPress={handleDirectoryPress}
+                />
+              )
+            return <File file={item} />
+          }}
           keyExtractor={(item) => `${item.id}`}
           showsHorizontalScrollIndicator={false}
           numColumns={2}
-        />
-      )}
-      {!isLoading && files.length > 0 && (
-        <FlatList
-          data={files}
-          renderItem={({ item }) => <File file={item} />}
-          keyExtractor={(item) => `${item.id}`}
-          showsHorizontalScrollIndicator={false}
-          numColumns={3}
         />
       )}
       <FloatingMenu

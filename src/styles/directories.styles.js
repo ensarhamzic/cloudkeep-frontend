@@ -5,8 +5,15 @@ export const DirectoryTouchableOpacity = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   padding: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  height: 180px;
+`
+
+export const FileTouchableOpacity = styled.TouchableOpacity`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  height: 150px;
 `
 
 export const DirectoryName = styled.Text`

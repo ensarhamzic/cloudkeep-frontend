@@ -10,8 +10,6 @@ export const Directory = ({ id, name, onDirectoryPress }) => {
     onDirectoryPress(id)
   }
 
-  console.log("Directory", id, name)
-
   return (
     <DirectoryTouchableOpacity onPress={id > 0 ? handleDirectoryPress : null}>
       <Entypo

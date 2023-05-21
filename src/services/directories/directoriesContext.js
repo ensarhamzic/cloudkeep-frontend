@@ -13,8 +13,10 @@ export const DirectoriesContextProvider = ({ children }) => {
 
   const onDirectoryAdd = (directory) => {
     setDirectories((prevDirs) => [...prevDirs, directory])
+  }
 
-    console.log(files)
+  const onFilesAdd = (files) => {
+    setFiles((prevFiles) => [...prevFiles, ...files])
   }
 
   const clearDirectories = () => {
@@ -29,6 +31,7 @@ export const DirectoriesContextProvider = ({ children }) => {
         files,
         onDirectoriesLoad,
         onDirectoryAdd,
+        onFilesAdd,
         clearDirectories,
       }}
     >

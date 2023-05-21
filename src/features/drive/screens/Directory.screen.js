@@ -15,8 +15,13 @@ import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../../../config"
 
 export const DirectoryScreen = ({ route, navigation }) => {
-  const { directories, files, onDirectoriesLoad, clearDirectories } =
-    useContext(DirectoriesContext)
+  const {
+    directories,
+    files,
+    onDirectoriesLoad,
+    onFilesAdd,
+    clearDirectories,
+  } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -102,7 +107,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (result.canceled) return
 
     const response = await uploadFiles(token, result.assets, directoryId)
-    console.log(response)
+    onFilesAdd(response.data)
   }
 
   const uploadFileHandler = async () => {
@@ -115,7 +120,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (file.type === "cancel") return
 
     const response = await uploadFiles(token, [file], directoryId)
-    console.log(response)
+    onFilesAdd(response.data)
   }
 
   const dirs = [
@@ -124,7 +129,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   if (dirs.length % 2 === 1) dirs.push({ id: -1, name: "", type: "directory" })
 
   const fs = [...files.map((file) => ({ ...file, type: "file" }))]
-  if (fs.length % 2 === 1) files.push({ id: -1, name: "", type: "file" })
+  if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: "file" })
 
   const content = [...dirs, ...fs]
 

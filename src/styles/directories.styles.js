@@ -5,6 +5,8 @@ export const DirectoryTouchableOpacity = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
   padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `
 
 export const DirectoryName = styled.Text`

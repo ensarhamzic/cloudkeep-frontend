@@ -106,8 +106,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (result.canceled) return
 
-    const response = await uploadFiles(token, result.assets, directoryId)
-    onFilesAdd(response.data)
+    // const response = await uploadFiles(token, result.assets, directoryId)
+    // onFilesAdd(response.data)
+
+    console.log(result.assets)
   }
 
   const uploadFileHandler = async () => {
@@ -119,8 +121,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (file.type === "cancel") return
 
-    const response = await uploadFiles(token, [file], directoryId)
-    onFilesAdd(response.data)
+    // const response = await uploadFiles(token, [file], directoryId)
+    // onFilesAdd(response.data)
+
+    console.log(file)
   }
 
   const dirs = [

@@ -56,3 +56,13 @@ export const BackButtonTouchableOpacity = styled.TouchableOpacity`
   margin-left: 10px;
   width: 60px;
 `
+
+export const PrimaryButton = styled(Button).attrs((props) => ({
+  contentStyle: {
+    backgroundColor: props.theme.colors.brand.primary,
+  },
+  mode: "contained",
+}))`
+  width: 50%;
+  align-self: center;
+`

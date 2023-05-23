@@ -51,3 +51,8 @@ export const CenteredActivityIndicator = styled(ActivityIndicator).attrs(
   justify-content: center;
   align-items: center;
 `
+
+export const BackButtonTouchableOpacity = styled.TouchableOpacity`
+  margin-left: 10px;
+  width: 60px;
+`

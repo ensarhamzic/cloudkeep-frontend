@@ -39,6 +39,7 @@ export const AppNavigator = () => {
         ),
         tabBarActiveTintColor: theme.colors.brand.primary,
         tabBarInactiveTintColor: theme.colors.darkGray,
+        headerShown: false,
       }
     },
     [theme]

@@ -7,11 +7,18 @@ const Stack = createStackNavigator()
 export const DirectoryNavigator = () => {
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
+    // screenOptions={{
+    //   headerShown: false,
+    // }}
     >
-      <Stack.Screen name="Directory" component={DirectoryScreen} />
+      <Stack.Screen
+        name="Directory"
+        component={DirectoryScreen}
+        options={{
+          title: "Drive",
+          headerTitleAlign: "center",
+        }}
+      />
     </Stack.Navigator>
   )
 }

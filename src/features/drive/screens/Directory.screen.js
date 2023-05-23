@@ -11,6 +11,7 @@ import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
 import { uploadFiles } from "../../../services/files/files.service"
 import { File } from "../../../components/File.component"
+import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../../../config"
 
@@ -58,6 +59,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
       const data = await getDirectories(token, directoryId)
+      navigation.setOptions({
+        title: data.currentDirectory?.name || "Drive",
+        headerLeft: () =>
+          (directoryId && <BackButton onBackPress={goToPreviousDirectory} />) ||
+          null,
+      })
       onDirectoriesLoad(data)
       setIsLoading(false)
       setIsLoaded(true)
@@ -68,16 +75,17 @@ export const DirectoryScreen = ({ route, navigation }) => {
     navigation.navigate("Directory", { directoryId })
   }
 
+  const goToPreviousDirectory = () => {
+    navigation.navigate("Directory", {
+      directoryId: directoryList[directoryList.length - 2],
+    })
+    return true
+  }
+
   useEffect(() => {
-    const backButtonHandler = () => {
-      navigation.navigate("Directory", {
-        directoryId: directoryList[directoryList.length - 2],
-      })
-      return true
-    }
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backButtonHandler
+      goToPreviousDirectory
     )
 
     // Remove back button listener on unmount

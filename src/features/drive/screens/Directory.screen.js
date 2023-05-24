@@ -27,11 +27,20 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [directoryList, setDirectoryList] = useState([])
+  const [currentDirectory, setCurrentDirectory] = useState(null)
   const directoryId = route?.params?.directoryId || null
   const directoriesLength = directories.length
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
+
+  const [selectedContent, setSelectedContent] = useState([])
+  const selectedContentLength = selectedContent.length
+  const selectedDirectories = selectedContent.filter(
+    (item) => item.type === "directory"
+  )
+  const selectedFiles = selectedContent.filter((item) => item.type === "file")
+  // console.log(selectedContent)
 
   // example usage of firebase storage
   // useEffect(() => {
@@ -54,6 +63,27 @@ export const DirectoryScreen = ({ route, navigation }) => {
     })
   }, [directoryId])
 
+  const setDefaultHeader = () => {
+    navigation.setOptions({
+      title: currentDirectory?.name || "Drive",
+      headerTitleAlign: "center",
+      headerLeft: () =>
+        (directoryId && <BackButton onBackPress={goBack} />) || null,
+    })
+  }
+
+  useEffect(() => {
+    if (selectedContentLength === 0) {
+      setDefaultHeader()
+      return
+    }
+    navigation.setOptions({
+      title: `${selectedContentLength} selected`,
+      headerTitleAlign: "left",
+      headerLeft: () => <BackButton onBackPress={goBack} cancel />,
+    })
+  }, [selectedContentLength])
+
   useEffect(() => {
     ;(async () => {
       if (isLoading || !token || isLoaded) return
@@ -61,10 +91,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
       const data = await getDirectories(token, directoryId)
       navigation.setOptions({
         title: data.currentDirectory?.name || "Drive",
+        headerTitleAlign: "center",
         headerLeft: () =>
-          (directoryId && <BackButton onBackPress={goToPreviousDirectory} />) ||
-          null,
+          (directoryId && <BackButton onBackPress={goBack} />) || null,
       })
+      setCurrentDirectory(data.currentDirectory)
       onDirectoriesLoad(data)
       setIsLoading(false)
       setIsLoaded(true)
@@ -72,10 +103,25 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [token, directoriesLength, isLoaded])
 
   const handleDirectoryPress = (directoryId) => {
+    if (selectedContent.length > 0) {
+      handleContentLongPress({ id: directoryId, type: "directory" })
+      return
+    }
     navigation.navigate("Directory", { directoryId })
   }
 
-  const goToPreviousDirectory = () => {
+  const handleFilePress = (fileId) => {
+    if (selectedContent.length > 0) {
+      handleContentLongPress({ id: fileId, type: "file" })
+      return
+    }
+  }
+
+  const goBack = () => {
+    if (selectedContent.length > 0) {
+      setSelectedContent([])
+      return true
+    }
     navigation.navigate("Directory", {
       directoryId: directoryList[directoryList.length - 2],
     })
@@ -85,7 +131,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      goToPreviousDirectory
+      goBack
     )
 
     // Remove back button listener on unmount
@@ -141,6 +187,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const content = [...dirs, ...fs]
 
+  const handleContentLongPress = (content) => {
+    setSelectedContent((prev) => {
+      const foundItem = prev.find(
+        (item) => item.id === content.id && item.type === content.type
+      )
+      if (foundItem) return prev.filter((item) => item.id !== content.id)
+      return [...prev, content]
+    })
+  }
+
   return (
     <>
       <AddDirectoryModal
@@ -161,9 +217,18 @@ export const DirectoryScreen = ({ route, navigation }) => {
                   id={item.id}
                   name={item.name}
                   onDirectoryPress={handleDirectoryPress}
+                  onDirectoryLongPress={handleContentLongPress}
+                  selected={selectedDirectories}
                 />
               )
-            return <File file={item} />
+            return (
+              <File
+                file={item}
+                onFilePress={handleFilePress}
+                onFileLongPress={handleContentLongPress}
+                selected={selectedFiles}
+              />
+            )
           }}
           keyExtractor={(item) => `${item.id}`}
           showsHorizontalScrollIndicator={false}

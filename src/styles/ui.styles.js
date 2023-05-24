@@ -66,3 +66,13 @@ export const PrimaryButton = styled(Button).attrs((props) => ({
   width: 50%;
   align-self: center;
 `
+
+export const SelectedDirectoryView = styled.View`
+  position: absolute;
+  z-index: 10;
+`
+export const SelectedFileView = styled.View`
+  position: absolute;
+  top: 20px;
+  z-index: 10;
+`

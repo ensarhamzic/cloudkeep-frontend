@@ -6,15 +6,17 @@ import {
   MaterialCommunityIcons,
   FontAwesome5,
 } from "@expo/vector-icons"
-import {
-  DirectoryName,
-  FileTouchableOpacity,
-} from "../styles/directories.styles"
+import { DirectoryName, FilePressable } from "../styles/directories.styles"
 import { FileType } from "../utils/fileType"
+import { SelectedFileView } from "../styles/ui.styles"
 
-export const File = ({ file }) => {
+export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
   const handleFilePress = () => {
-    //
+    onFilePress(file.id)
+  }
+
+  const handleFileLongPress = () => {
+    onFileLongPress({ id: file.id, type: "file" })
   }
 
   const size = 50
@@ -61,9 +63,17 @@ export const File = ({ file }) => {
   }
 
   return (
-    <FileTouchableOpacity onPress={file.id > 0 ? handleFilePress : null}>
+    <FilePressable
+      onPress={file.id > 0 ? handleFilePress : null}
+      onLongPress={file.id > 0 ? handleFileLongPress : null}
+    >
+      {selected.find((item) => item.id === file.id) && (
+        <SelectedFileView>
+          <AntDesign name="checkcircle" size={35} color="lightgreen" />
+        </SelectedFileView>
+      )}
       {FileIcon}
       <DirectoryName>{file.name}</DirectoryName>
-    </FileTouchableOpacity>
+    </FilePressable>
   )
 }

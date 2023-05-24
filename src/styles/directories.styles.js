@@ -1,6 +1,6 @@
 import styled from "styled-components"
 
-export const DirectoryTouchableOpacity = styled.TouchableOpacity`
+export const DirectoryPressable = styled.Pressable`
   flex: 1;
   justify-content: center;
   align-items: center;
@@ -8,7 +8,7 @@ export const DirectoryTouchableOpacity = styled.TouchableOpacity`
   height: 180px;
 `
 
-export const FileTouchableOpacity = styled.TouchableOpacity`
+export const FilePressable = styled.Pressable`
   flex: 1;
   justify-content: center;
   align-items: center;

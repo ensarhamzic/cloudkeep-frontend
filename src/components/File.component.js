@@ -9,6 +9,7 @@ import {
 import { DirectoryName, FilePressable } from "../styles/directories.styles"
 import { FileType } from "../utils/fileType"
 import { SelectedFileView } from "../styles/ui.styles"
+import { ContentType } from "../utils/contentType"
 
 export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
   const handleFilePress = () => {
@@ -16,7 +17,7 @@ export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
   }
 
   const handleFileLongPress = () => {
-    onFileLongPress({ id: file.id, type: "file" })
+    onFileLongPress({ id: file.id, type: ContentType.FILE })
   }
 
   const size = 50

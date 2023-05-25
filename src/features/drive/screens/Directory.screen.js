@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FlatList, BackHandler, Text } from "react-native"
+import { FlatList, BackHandler, Text, TouchableOpacity } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
@@ -14,12 +14,17 @@ import { File } from "../../../components/File.component"
 import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../../../config"
+import { HeaderRightOptionsView } from "../../../styles/ui.styles"
+import { MaterialIcons, AntDesign } from "@expo/vector-icons"
+import { ContentType } from "../../../utils/contentType"
+import { deleteContent } from "../../../services/contents/contents.service"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
     directories,
     files,
     onDirectoriesLoad,
+    onContentDelete,
     onFilesAdd,
     clearDirectories,
   } = useContext(DirectoriesContext)
@@ -37,9 +42,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [selectedContent, setSelectedContent] = useState([])
   const selectedContentLength = selectedContent.length
   const selectedDirectories = selectedContent.filter(
-    (item) => item.type === "directory"
+    (item) => item.type === ContentType.DIRECTORY
   )
-  const selectedFiles = selectedContent.filter((item) => item.type === "file")
+  const selectedFiles = selectedContent.filter(
+    (item) => item.type === ContentType.FILE
+  )
   // console.log(selectedContent)
 
   // example usage of firebase storage
@@ -69,8 +76,35 @@ export const DirectoryScreen = ({ route, navigation }) => {
       headerTitleAlign: "center",
       headerLeft: () =>
         (directoryId && <BackButton onBackPress={goBack} />) || null,
+      headerRight: null,
     })
   }
+
+  const deleteContentHandler = async () => {
+    await deleteContent(token, selectedContent)
+    onContentDelete(selectedContent)
+    setSelectedContent([])
+  }
+
+  const HeaderRight = (
+    <HeaderRightOptionsView>
+      <TouchableOpacity>
+        <AntDesign name="star" size={24} color="black" />
+      </TouchableOpacity>
+      {selectedContentLength === 1 && (
+        <TouchableOpacity>
+          <MaterialIcons
+            name="drive-file-rename-outline"
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity onPress={deleteContentHandler}>
+        <MaterialIcons name="delete" size={24} color="black" />
+      </TouchableOpacity>
+    </HeaderRightOptionsView>
+  )
 
   useEffect(() => {
     if (selectedContentLength === 0) {
@@ -81,6 +115,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       title: `${selectedContentLength} selected`,
       headerTitleAlign: "left",
       headerLeft: () => <BackButton onBackPress={goBack} cancel />,
+      headerRight: () => HeaderRight,
     })
   }, [selectedContentLength])
 
@@ -104,7 +139,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const handleDirectoryPress = (directoryId) => {
     if (selectedContent.length > 0) {
-      handleContentLongPress({ id: directoryId, type: "directory" })
+      handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
       return
     }
     navigation.navigate("Directory", { directoryId })
@@ -112,7 +147,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const handleFilePress = (fileId) => {
     if (selectedContent.length > 0) {
-      handleContentLongPress({ id: fileId, type: "file" })
+      handleContentLongPress({ id: fileId, type: ContentType.FILE })
       return
     }
   }
@@ -178,12 +213,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const dirs = [
-    ...directories.map((directory) => ({ ...directory, type: "directory" })),
+    ...directories.map((directory) => ({
+      ...directory,
+      type: ContentType.DIRECTORY,
+    })),
   ]
-  if (dirs.length % 2 === 1) dirs.push({ id: -1, name: "", type: "directory" })
+  if (dirs.length % 2 === 1)
+    dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
 
-  const fs = [...files.map((file) => ({ ...file, type: "file" }))]
-  if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: "file" })
+  const fs = [...files.map((file) => ({ ...file, type: ContentType.FILE }))]
+  if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: ContentType.FILE })
 
   const content = [...dirs, ...fs]
 
@@ -211,7 +250,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
         <FlatList
           data={content}
           renderItem={({ item }) => {
-            if (item.type === "directory")
+            if (item.type === ContentType.DIRECTORY)
               return (
                 <Directory
                   id={item.id}
@@ -230,7 +269,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
               />
             )
           }}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) =>
+            item.type === ContentType.DIRECTORY ? `d${item.id}` : `f${item.id}`
+          }
           showsHorizontalScrollIndicator={false}
           numColumns={2}
         />

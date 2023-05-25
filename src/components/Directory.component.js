@@ -2,6 +2,7 @@ import React from "react"
 import { Entypo, AntDesign } from "@expo/vector-icons"
 import { DirectoryName, DirectoryPressable } from "../styles/directories.styles"
 import { SelectedDirectoryView } from "../styles/ui.styles"
+import { ContentType } from "../utils/contentType"
 
 export const Directory = ({
   id,
@@ -15,7 +16,7 @@ export const Directory = ({
   }
 
   const handleDirectoryLongPress = () => {
-    onDirectoryLongPress({ id, type: "directory" })
+    onDirectoryLongPress({ id, type: ContentType.DIRECTORY })
   }
 
   return (

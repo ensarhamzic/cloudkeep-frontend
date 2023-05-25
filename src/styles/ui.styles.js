@@ -76,3 +76,11 @@ export const SelectedFileView = styled.View`
   top: 20px;
   z-index: 10;
 `
+
+export const HeaderRightOptionsView = styled.View`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-right: 10px;
+`

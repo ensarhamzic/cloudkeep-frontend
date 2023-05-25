@@ -18,6 +18,7 @@ import { HeaderRightOptionsView } from "../../../styles/ui.styles"
 import { MaterialIcons, AntDesign } from "@expo/vector-icons"
 import { ContentType } from "../../../utils/contentType"
 import { deleteContent } from "../../../services/contents/contents.service"
+import { RenameContentModal } from "../components/RenameContentModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
@@ -38,6 +39,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
+  const [renameModalOpened, setRenameModalOpened] = useState(false)
 
   const [selectedContent, setSelectedContent] = useState([])
   const selectedContentLength = selectedContent.length
@@ -86,13 +88,17 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setSelectedContent([])
   }
 
+  const renamePressHandler = () => {
+    setRenameModalOpened(true)
+  }
+
   const HeaderRight = (
     <HeaderRightOptionsView>
       <TouchableOpacity>
         <AntDesign name="star" size={24} color="black" />
       </TouchableOpacity>
       {selectedContentLength === 1 && (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={renamePressHandler}>
           <MaterialIcons
             name="drive-file-rename-outline"
             size={24}
@@ -243,6 +249,23 @@ export const DirectoryScreen = ({ route, navigation }) => {
         onClose={() => setNewDirModalOpened(false)}
         onAdd={onNewDirectoryCreated}
         parentDirectoryId={directoryId}
+      />
+      <RenameContentModal
+        opened={renameModalOpened}
+        onClose={() => setRenameModalOpened(false)}
+        parentDirectoryId={directoryId}
+        name={
+          content.find(
+            (item) =>
+              item.id === selectedContent[0]?.id &&
+              item.type === selectedContent[0]?.type
+          )?.name
+        }
+        content={selectedContent[0]}
+        onRename={() => {
+          setRenameModalOpened(false)
+          setSelectedContent([])
+        }}
       />
       {isLoading && loadingContent}
       {!isLoading && content.length === 0 && <Text>No content</Text>}

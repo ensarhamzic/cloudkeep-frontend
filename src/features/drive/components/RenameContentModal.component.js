@@ -9,80 +9,95 @@ import {
   ModalActionsView,
 } from "../../../styles/ui.styles"
 import { ErrorText, FormInput } from "../../../styles/auth.styles"
-import { createDirectory } from "../../../services/directories/directories.service"
+import { renameContent } from "../../../services/directories/directories.service"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
 import { ActivityIndicator } from "react-native-paper"
 
-export const AddDirectoryModal = ({
+export const RenameContentModal = ({
+  name,
+  content,
   opened,
   onClose,
-  onAdd,
   parentDirectoryId,
+  onRename,
 }) => {
-  const { onDirectoryAdd } = useContext(DirectoriesContext)
+  const { onContentRename } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
-  const [name, setName] = useState("")
-  const [nameError, setNameError] = useState(null)
+  const [newName, setNewName] = useState(name)
+  const [newNameError, setNewNameError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [formSubmitted, setFormSubmitted] = useState(false)
 
-  const addDirHandler = async () => {
-    setFormSubmitted(true)
-    if (!name) setNameError("Directory name is required")
-    else if (name.length < 3)
-      setNameError("Directory name must be at least 3 characters long")
-    else if (name.length > 100)
-      setNameError("Directoryxc name must be at most 100 characters long")
-    else setNameError(null)
+  useEffect(() => {
+    setNewName(name)
+  }, [name])
+
+  const renameHandler = async () => {
+    if (name === newName) {
+      onRename()
+      return
+    }
+
+    if (!newName) setNewNameError("Content name is required")
+    else if (newName.length < 3)
+      setNewNameError("Content name must be at least 3 characters long")
+    else if (newName.length > 100)
+      setNewNameError("Content name must be at most 100 characters long")
+    else setNewNameError(null)
+  }
+
+  const onModalClose = () => {
+    setNewName("")
+    setError(null)
+    onClose()
   }
 
   useEffect(() => {
     ;(async () => {
       if (isLoading) return
       setFormSubmitted(false)
-      if (formSubmitted && !nameError) {
+      if (formSubmitted && !newNameError) {
         setIsLoading(true)
         setError(null)
-        const data = await createDirectory(token, name, parentDirectoryId)
+        const data = await renameContent(
+          token,
+          content,
+          newName,
+          parentDirectoryId
+        )
         if (data.error) {
           setError(data.message)
           setIsLoading(false)
           return
         }
-        onDirectoryAdd(data.data)
-        onAdd()
+        onContentRename(content, data.name)
         setIsLoading(false)
-        setName("")
+        setNewName("")
+        onRename()
       }
     })()
-  }, [formSubmitted, nameError])
-
-  const onModalClose = () => {
-    setName("")
-    setError(null)
-    onClose()
-  }
+  }, [formSubmitted, newNameError])
 
   return (
     <AppModal opened={opened} onClose={onClose}>
-      <Text>Create new directory</Text>
+      <Text>Rename</Text>
       <HorizontalLine />
       <FormInput
-        placeholder="Directory name"
-        onChangeText={setName}
-        value={name}
-        label="Directory name"
+        placeholder="Content name"
+        onChangeText={setNewName}
+        value={newName}
+        label="Content name"
       />
       {error && (
         <Spacer size="medium">
           <ErrorText>{error}</ErrorText>
         </Spacer>
       )}
-      {nameError && (
+      {newNameError && (
         <Spacer size="medium">
-          <ErrorText>{nameError}</ErrorText>
+          <ErrorText>{newNameError}</ErrorText>
         </Spacer>
       )}
       <Spacer size="large">
@@ -90,8 +105,8 @@ export const AddDirectoryModal = ({
           <CancelButton onPress={onModalClose} disabled={isLoading}>
             <Text>Cancel</Text>
           </CancelButton>
-          <AcceptButton onPress={addDirHandler} disabled={isLoading}>
-            <Text>Create</Text>
+          <AcceptButton onPress={renameHandler} disabled={isLoading}>
+            <Text>Rename</Text>
           </AcceptButton>
           {isLoading && <ActivityIndicator />}
         </ModalActionsView>

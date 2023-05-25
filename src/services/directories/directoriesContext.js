@@ -33,6 +33,24 @@ export const DirectoriesContextProvider = ({ children }) => {
     )
   }
 
+  const onContentRename = (content, name) => {
+    if (content.type === ContentType.DIRECTORY) {
+      setDirectories((prevDirs) =>
+        prevDirs.map((dir) => {
+          if (dir.id === content.id) return { ...dir, name }
+          return dir
+        })
+      )
+    } else {
+      setFiles((prevFiles) =>
+        prevFiles.map((file) => {
+          if (file.id === content.id) return { ...file, name }
+          return file
+        })
+      )
+    }
+  }
+
   const clearDirectories = () => {
     setDirectories([])
     setFiles([])
@@ -46,6 +64,7 @@ export const DirectoriesContextProvider = ({ children }) => {
         onDirectoriesLoad,
         onDirectoryAdd,
         onFilesAdd,
+        onContentRename,
         onContentDelete,
         clearDirectories,
       }}

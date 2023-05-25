@@ -44,3 +44,34 @@ export const createDirectory = async (token, name, parentDirectoryId) => {
     }
   }
 }
+
+export const renameContent = async (
+  token,
+  content,
+  name,
+  parentDirectoryId
+) => {
+  console.log(name)
+  try {
+    const response = await axios.put(
+      `${API_URL}/contents`,
+      {
+        id: content.id,
+        type: content.type,
+        name,
+        parentDirectoryId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}

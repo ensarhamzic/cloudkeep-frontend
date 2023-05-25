@@ -15,9 +15,16 @@ import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../../../config"
 import { HeaderRightOptionsView } from "../../../styles/ui.styles"
-import { MaterialIcons, AntDesign } from "@expo/vector-icons"
+import {
+  MaterialIcons,
+  AntDesign,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons"
 import { ContentType } from "../../../utils/contentType"
-import { deleteContent } from "../../../services/contents/contents.service"
+import {
+  addRemoveFavorites,
+  deleteContent,
+} from "../../../services/contents/contents.service"
 import { RenameContentModal } from "../components/RenameContentModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
@@ -27,6 +34,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     onDirectoriesLoad,
     onContentDelete,
     onFilesAdd,
+    onAddRemoveFavorites,
     clearDirectories,
   } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
@@ -49,7 +57,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const selectedFiles = selectedContent.filter(
     (item) => item.type === ContentType.FILE
   )
-  // console.log(selectedContent)
 
   // example usage of firebase storage
   // useEffect(() => {
@@ -92,11 +99,62 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setRenameModalOpened(true)
   }
 
+  let canAddToFavorites = true
+  let canRemoveFromFavorites = true
+
+  for (let i = 0; i < selectedContent.length; i++) {
+    if (
+      selectedContent[i].type === ContentType.DIRECTORY &&
+      directories.find((dir) => dir.id === selectedContent[i].id)?.favorite
+    ) {
+      canAddToFavorites = false
+      break
+    }
+    if (
+      selectedContent[i].type === ContentType.FILE &&
+      files.find((file) => file.id === selectedContent[i].id)?.favorite
+    ) {
+      canAddToFavorites = false
+      break
+    }
+  }
+
+  for (let i = 0; i < selectedContent.length; i++) {
+    if (
+      selectedContent[i].type === ContentType.DIRECTORY &&
+      !directories.find((dir) => dir.id === selectedContent[i].id)?.favorite
+    ) {
+      canRemoveFromFavorites = false
+      break
+    }
+    if (
+      selectedContent[i].type === ContentType.FILE &&
+      !files.find((file) => file.id === selectedContent[i].id)?.favorite
+    ) {
+      canRemoveFromFavorites = false
+      break
+    }
+  }
+
+  const addRemoveFavoritesHandler = async () => {
+    onAddRemoveFavorites(selectedContent)
+    const response = await addRemoveFavorites(token, selectedContent)
+    if (response.error) return
+    setSelectedContent([])
+  }
+
   const HeaderRight = (
     <HeaderRightOptionsView>
-      <TouchableOpacity>
-        <AntDesign name="star" size={24} color="black" />
-      </TouchableOpacity>
+      {canAddToFavorites && (
+        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
+          <AntDesign name="star" size={24} color="black" />
+        </TouchableOpacity>
+      )}
+      {canRemoveFromFavorites && (
+        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
+          <MaterialCommunityIcons name="star-off" size={24} color="black" />
+        </TouchableOpacity>
+      )}
       {selectedContentLength === 1 && (
         <TouchableOpacity onPress={renamePressHandler}>
           <MaterialIcons
@@ -237,7 +295,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       const foundItem = prev.find(
         (item) => item.id === content.id && item.type === content.type
       )
-      if (foundItem) return prev.filter((item) => item.id !== content.id)
+      if (foundItem) return prev.filter((item) => item !== foundItem)
       return [...prev, content]
     })
   }
@@ -276,8 +334,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
             if (item.type === ContentType.DIRECTORY)
               return (
                 <Directory
-                  id={item.id}
-                  name={item.name}
+                  directory={item}
                   onDirectoryPress={handleDirectoryPress}
                   onDirectoryLongPress={handleContentLongPress}
                   selected={selectedDirectories}

@@ -40,6 +40,7 @@ export const RenameContentModal = ({
       return
     }
 
+    setFormSubmitted(true)
     if (!newName) setNewNameError("Content name is required")
     else if (newName.length < 3)
       setNewNameError("Content name must be at least 3 characters long")

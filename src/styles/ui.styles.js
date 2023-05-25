@@ -77,6 +77,20 @@ export const SelectedFileView = styled.View`
   z-index: 10;
 `
 
+export const FavoriteDirectoryView = styled.View`
+  position: absolute;
+  top: 55px;
+  right: 50px;
+  z-index: 10;
+`
+
+export const FavoriteFileView = styled.View`
+  position: absolute;
+  top: 5px;
+  right: 60px;
+  z-index: 10;
+`
+
 export const HeaderRightOptionsView = styled.View`
   flex-direction: row;
   justify-content: center;

@@ -51,6 +51,27 @@ export const DirectoriesContextProvider = ({ children }) => {
     }
   }
 
+  const onAddRemoveFavorites = (contents) => {
+    const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
+    const fs = contents.filter((c) => c.type === ContentType.FILE)
+
+    setDirectories((prevDirs) =>
+      prevDirs.map((dir) => {
+        if (dirs.find((d) => d.id === dir.id))
+          return { ...dir, favorite: !dir.favorite }
+        return dir
+      })
+    )
+
+    setFiles((prevFiles) =>
+      prevFiles.map((file) => {
+        if (fs.find((f) => f.id === file.id))
+          return { ...file, favorite: !file.favorite }
+        return file
+      })
+    )
+  }
+
   const clearDirectories = () => {
     setDirectories([])
     setFiles([])
@@ -66,6 +87,7 @@ export const DirectoriesContextProvider = ({ children }) => {
         onFilesAdd,
         onContentRename,
         onContentDelete,
+        onAddRemoveFavorites,
         clearDirectories,
       }}
     >

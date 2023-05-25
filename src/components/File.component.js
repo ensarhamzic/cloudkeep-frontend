@@ -8,8 +8,9 @@ import {
 } from "@expo/vector-icons"
 import { DirectoryName, FilePressable } from "../styles/directories.styles"
 import { FileType } from "../utils/fileType"
-import { SelectedFileView } from "../styles/ui.styles"
+import { FavoriteFileView, SelectedFileView } from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
+import * as Haptics from "expo-haptics"
 
 export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
   const handleFilePress = () => {
@@ -17,11 +18,14 @@ export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
   }
 
   const handleFileLongPress = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
     onFileLongPress({ id: file.id, type: ContentType.FILE })
   }
 
+  const isSelected = selected.find((item) => item.id === file.id)
+
   const size = 50
-  const color = file.id > 0 ? "gray" : "transparent"
+  const color = file.id > 0 ? (isSelected ? "black" : "gray") : "transparent"
 
   const fileType = FileType[file.fileType]
 
@@ -68,13 +72,18 @@ export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
       onPress={file.id > 0 ? handleFilePress : null}
       onLongPress={file.id > 0 ? handleFileLongPress : null}
     >
-      {selected.find((item) => item.id === file.id) && (
+      {isSelected && (
         <SelectedFileView>
           <AntDesign name="checkcircle" size={35} color="lightgreen" />
         </SelectedFileView>
       )}
+      {file.favorite && (
+        <FavoriteFileView>
+          <AntDesign name="star" size={25} color="gold" />
+        </FavoriteFileView>
+      )}
       {FileIcon}
-      <DirectoryName>{file.name}</DirectoryName>
+      <DirectoryName numberOfLines={2}>{file.name}</DirectoryName>
     </FilePressable>
   )
 }

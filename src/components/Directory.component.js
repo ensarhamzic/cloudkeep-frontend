@@ -1,40 +1,52 @@
 import React from "react"
 import { Entypo, AntDesign } from "@expo/vector-icons"
 import { DirectoryName, DirectoryPressable } from "../styles/directories.styles"
-import { SelectedDirectoryView } from "../styles/ui.styles"
+import {
+  FavoriteDirectoryView,
+  SelectedDirectoryView,
+} from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
+import * as Haptics from "expo-haptics"
 
 export const Directory = ({
-  id,
-  name,
+  directory,
   onDirectoryPress,
   onDirectoryLongPress,
   selected,
 }) => {
   const handleDirectoryPress = () => {
-    onDirectoryPress(id)
+    onDirectoryPress(directory.id)
   }
 
   const handleDirectoryLongPress = () => {
-    onDirectoryLongPress({ id, type: ContentType.DIRECTORY })
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+    onDirectoryLongPress({ id: directory.id, type: ContentType.DIRECTORY })
   }
 
+  const isSelected = selected.find((item) => item.id === directory.id)
   return (
     <DirectoryPressable
-      onPress={id > 0 ? handleDirectoryPress : null}
-      onLongPress={id > 0 ? handleDirectoryLongPress : null}
+      onPress={directory.id > 0 ? handleDirectoryPress : null}
+      onLongPress={directory.id > 0 ? handleDirectoryLongPress : null}
     >
-      {selected.find((item) => item.id === id) && (
+      {isSelected && (
         <SelectedDirectoryView>
           <AntDesign name="checkcircle" size={35} color="lightgreen" />
         </SelectedDirectoryView>
       )}
+      {directory.favorite && (
+        <FavoriteDirectoryView>
+          <AntDesign name="star" size={25} color="gold" />
+        </FavoriteDirectoryView>
+      )}
       <Entypo
         name="folder"
         size={120}
-        color={id > 0 ? "gray" : "transparent"}
+        color={
+          directory.id > 0 ? (isSelected ? "black" : "gray") : "transparent"
+        }
       />
-      <DirectoryName>{name}</DirectoryName>
+      <DirectoryName numberOfLines={2}>{directory.name}</DirectoryName>
     </DirectoryPressable>
   )
 }

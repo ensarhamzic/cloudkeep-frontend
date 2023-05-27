@@ -1,8 +1,12 @@
 import axios from "axios"
 import { API_URL } from "../../../env"
 
-export const getDirectories = async (token, directoryId) => {
-  const queryParameters = directoryId ? `directoryId=${directoryId}` : ""
+export const getDirectories = async (token, directoryId, mode) => {
+  const queryParameters =
+    `favorite=${mode}&` +
+    (directoryId !== null ? `directoryId=${directoryId}` : "")
+
+  console.log("QUERY PARAMS", queryParameters)
 
   try {
     const response = await axios.get(
@@ -13,6 +17,7 @@ export const getDirectories = async (token, directoryId) => {
         },
       }
     )
+    console.log(response.data)
     return response.data
   } catch (error) {
     return {

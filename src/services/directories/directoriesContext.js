@@ -176,74 +176,37 @@ export const DirectoriesContextProvider = ({ children }) => {
     const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
     const fs = contents.filter((c) => c.type === ContentType.FILE)
 
-    if (currentDirectory?.id === currentFavoritesDirectory?.id) {
-      setDirectories((prevDirs) =>
-        prevDirs.map((dir) => {
-          if (dirs.find((d) => d.id === dir.id))
-            return { ...dir, favorite: !dir.favorite }
-          return dir
-        })
-      )
+    setDirectories((prevDirs) =>
+      prevDirs.map((dir) => {
+        if (dirs.find((d) => d.id === dir.id))
+          return { ...dir, favorite: !dir.favorite }
+        return dir
+      })
+    )
 
-      setFiles((prevFiles) =>
-        prevFiles.map((file) => {
-          if (fs.find((f) => f.id === file.id))
-            return { ...file, favorite: !file.favorite }
-          return file
-        })
-      )
+    setFiles((prevFiles) =>
+      prevFiles.map((file) => {
+        if (fs.find((f) => f.id === file.id))
+          return { ...file, favorite: !file.favorite }
+        return file
+      })
+    )
 
-      setFavorites((prevDirs) =>
-        prevDirs.map((dir) => {
-          if (dirs.find((d) => d.id === dir.id))
-            return { ...dir, favorite: !dir.favorite }
-          return dir
-        })
-      )
+    setFavorites((prevDirs) =>
+      prevDirs.map((dir) => {
+        if (dirs.find((d) => d.id === dir.id))
+          return { ...dir, favorite: !dir.favorite }
+        return dir
+      })
+    )
 
-      setFavoritesFiles((prevFiles) =>
-        prevFiles.map((file) => {
-          if (fs.find((f) => f.id === file.id))
-            return { ...file, favorite: !file.favorite }
-          return file
-        })
-      )
-    } else {
-      switch (mode) {
-        case DriveMode.DRIVE:
-          setDirectories((prevDirs) =>
-            prevDirs.map((dir) => {
-              if (dirs.find((d) => d.id === dir.id))
-                return { ...dir, favorite: !dir.favorite }
-              return dir
-            })
-          )
-          setFiles((prevFiles) =>
-            prevFiles.map((file) => {
-              if (fs.find((f) => f.id === file.id))
-                return { ...file, favorite: !file.favorite }
-              return file
-            })
-          )
-          break
-        case DriveMode.FAVORITES:
-          setFavorites((prevDirs) =>
-            prevDirs.map((dir) => {
-              if (dirs.find((d) => d.id === dir.id))
-                return { ...dir, favorite: !dir.favorite }
-              return dir
-            })
-          )
-          setFavoritesFiles((prevFiles) =>
-            prevFiles.map((file) => {
-              if (fs.find((f) => f.id === file.id))
-                return { ...file, favorite: !file.favorite }
-              return file
-            })
-          )
-          break
-      }
-    }
+    setFavoritesFiles((prevFiles) =>
+      prevFiles.map((file) => {
+        if (fs.find((f) => f.id === file.id))
+          return { ...file, favorite: !file.favorite }
+        return file
+      })
+    )
   }
 
   const clearDirectories = (mode) => {

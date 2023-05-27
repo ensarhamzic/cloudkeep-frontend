@@ -195,7 +195,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
     ;(async () => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
-      const data = await getDirectories(token, directoryId)
+      const data = await getDirectories(
+        token,
+        directoryId,
+        mode === DriveMode.FAVORITES
+      )
       console.log("DATA", data)
       let title = mode === DriveMode.DRIVE ? "Drive" : "Favorites"
       if (data.currentDirectory) title = data.currentDirectory?.name
@@ -309,12 +313,18 @@ export const DirectoryScreen = ({ route, navigation }) => {
         type: ContentType.DIRECTORY,
       })),
     ]
-    if (dirs.length % 2 === 1)
-      dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
 
     fs = [
       ...favoritesFiles.map((file) => ({ ...file, type: ContentType.FILE })),
     ]
+
+    if (directoryId === null) {
+      dirs = dirs.filter((dir) => dir.favorite)
+      fs = fs.filter((file) => file.favorite)
+    }
+
+    if (dirs.length % 2 === 1)
+      dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
     if (fs.length % 2 === 1)
       fs.push({ id: -1, name: "", type: ContentType.FILE })
   }

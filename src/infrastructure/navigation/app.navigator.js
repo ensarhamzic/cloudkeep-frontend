@@ -9,7 +9,8 @@ import {
 } from "@expo/vector-icons"
 import { useTheme } from "styled-components"
 import { DirectoryNavigator } from "./directory.navigator"
-import { SettingsScreen } from "../../features/Settings/screens/Settings.screen"
+import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
+import { FavoritesNavigator } from "./favorites.navigator"
 
 const Tab = createBottomTabNavigator()
 
@@ -50,7 +51,7 @@ export const AppNavigator = () => {
     <Tab.Navigator screenOptions={createScreenOptions}>
       <Tab.Screen name="Drive" component={DirectoryNavigator} />
       <Tab.Screen name="Shared" component={DriveScreen} />
-      <Tab.Screen name="Favorites" component={DriveScreen} />
+      <Tab.Screen name="Favorites" component={FavoritesNavigator} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   )

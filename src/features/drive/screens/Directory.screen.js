@@ -26,11 +26,16 @@ import {
   deleteContent,
 } from "../../../services/contents/contents.service"
 import { RenameContentModal } from "../components/RenameContentModal.component"
+import { DriveMode } from "../../../utils/driveMode"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
     directories,
     files,
+    currentDirectory,
+    currentFavoritesDirectory,
+    favorites,
+    favoritesFiles,
     onDirectoriesLoad,
     onContentDelete,
     onFilesAdd,
@@ -41,9 +46,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [directoryList, setDirectoryList] = useState([])
-  const [currentDirectory, setCurrentDirectory] = useState(null)
   const directoryId = route?.params?.directoryId || null
-  const directoriesLength = directories.length
+  const mode = route?.params?.mode || null
+  console.log("MODE", mode)
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
@@ -81,7 +86,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const setDefaultHeader = () => {
     navigation.setOptions({
-      title: currentDirectory?.name || "Drive",
+      title:
+        mode === DriveMode.DRIVE
+          ? currentDirectory?.name || "Drive"
+          : currentFavoritesDirectory?.name || "Favorites",
       headerTitleAlign: "center",
       headerLeft: () =>
         (directoryId && <BackButton onBackPress={goBack} />) || null,
@@ -91,7 +99,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const deleteContentHandler = async () => {
     await deleteContent(token, selectedContent)
-    onContentDelete(selectedContent)
+    onContentDelete(selectedContent, mode)
     setSelectedContent([])
   }
 
@@ -137,7 +145,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const addRemoveFavoritesHandler = async () => {
-    onAddRemoveFavorites(selectedContent)
+    onAddRemoveFavorites(selectedContent, mode)
     const response = await addRemoveFavorites(token, selectedContent)
     if (response.error) return
     setSelectedContent([])
@@ -188,18 +196,20 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
       const data = await getDirectories(token, directoryId)
+      console.log("DATA", data)
+      let title = mode === DriveMode.DRIVE ? "Drive" : "Favorites"
+      if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
-        title: data.currentDirectory?.name || "Drive",
+        title,
         headerTitleAlign: "center",
         headerLeft: () =>
           (directoryId && <BackButton onBackPress={goBack} />) || null,
       })
-      setCurrentDirectory(data.currentDirectory)
-      onDirectoriesLoad(data)
+      onDirectoriesLoad(data, mode)
       setIsLoading(false)
       setIsLoaded(true)
     })()
-  }, [token, directoriesLength, isLoaded])
+  }, [token, isLoaded])
 
   const handleDirectoryPress = (directoryId) => {
     if (selectedContent.length > 0) {
@@ -260,7 +270,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (result.canceled) return
 
     const response = await uploadFiles(token, result.assets, directoryId)
-    onFilesAdd(response.data)
+    onFilesAdd(response.data, mode)
   }
 
   const uploadFileHandler = async () => {
@@ -273,20 +283,41 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (file.type === "cancel") return
 
     const response = await uploadFiles(token, [file], directoryId)
-    onFilesAdd(response.data)
+    onFilesAdd(response.data, mode)
   }
 
-  const dirs = [
-    ...directories.map((directory) => ({
-      ...directory,
-      type: ContentType.DIRECTORY,
-    })),
-  ]
-  if (dirs.length % 2 === 1)
-    dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
+  let dirs = []
+  let fs = []
 
-  const fs = [...files.map((file) => ({ ...file, type: ContentType.FILE }))]
-  if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: ContentType.FILE })
+  if (mode === DriveMode.DRIVE) {
+    dirs = [
+      ...directories.map((directory) => ({
+        ...directory,
+        type: ContentType.DIRECTORY,
+      })),
+    ]
+    if (dirs.length % 2 === 1)
+      dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
+
+    fs = [...files.map((file) => ({ ...file, type: ContentType.FILE }))]
+    if (fs.length % 2 === 1)
+      fs.push({ id: -1, name: "", type: ContentType.FILE })
+  } else {
+    dirs = [
+      ...favorites.map((directory) => ({
+        ...directory,
+        type: ContentType.DIRECTORY,
+      })),
+    ]
+    if (dirs.length % 2 === 1)
+      dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
+
+    fs = [
+      ...favoritesFiles.map((file) => ({ ...file, type: ContentType.FILE })),
+    ]
+    if (fs.length % 2 === 1)
+      fs.push({ id: -1, name: "", type: ContentType.FILE })
+  }
 
   const content = [...dirs, ...fs]
 
@@ -307,6 +338,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
         onClose={() => setNewDirModalOpened(false)}
         onAdd={onNewDirectoryCreated}
         parentDirectoryId={directoryId}
+        mode={mode}
       />
       <RenameContentModal
         opened={renameModalOpened}
@@ -324,6 +356,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
           setRenameModalOpened(false)
           setSelectedContent([])
         }}
+        mode={mode}
       />
       {isLoading && loadingContent}
       {!isLoading && content.length === 0 && <Text>No content</Text>}
@@ -356,14 +389,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
           numColumns={2}
         />
       )}
-      <FloatingMenu
-        modalOpened={newDirModalOpened}
-        opened={floatingMenuOpened}
-        onNewDirClick={newDirClickHandler}
-        onUploadMediaClick={uploadMediaHandler}
-        onUploadFileClick={uploadFileHandler}
-        onToggle={() => setFloatingMenuOpened((prev) => !prev)}
-      />
+      {mode === DriveMode.DRIVE && (
+        <FloatingMenu
+          modalOpened={newDirModalOpened}
+          opened={floatingMenuOpened}
+          onNewDirClick={newDirClickHandler}
+          onUploadMediaClick={uploadMediaHandler}
+          onUploadFileClick={uploadFileHandler}
+          onToggle={() => setFloatingMenuOpened((prev) => !prev)}
+        />
+      )}
     </>
   )
 }

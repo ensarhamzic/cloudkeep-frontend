@@ -19,6 +19,7 @@ export const AddDirectoryModal = ({
   onClose,
   onAdd,
   parentDirectoryId,
+  mode,
 }) => {
   const { onDirectoryAdd } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
@@ -34,7 +35,7 @@ export const AddDirectoryModal = ({
     else if (name.length < 3)
       setNameError("Directory name must be at least 3 characters long")
     else if (name.length > 100)
-      setNameError("Directoryxc name must be at most 100 characters long")
+      setNameError("Directory name must be at most 100 characters long")
     else setNameError(null)
   }
 
@@ -51,7 +52,7 @@ export const AddDirectoryModal = ({
           setIsLoading(false)
           return
         }
-        onDirectoryAdd(data.data)
+        onDirectoryAdd(data.data, mode)
         onAdd()
         setIsLoading(false)
         setName("")

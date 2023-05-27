@@ -21,6 +21,7 @@ export const RenameContentModal = ({
   onClose,
   parentDirectoryId,
   onRename,
+  mode,
 }) => {
   const { onContentRename } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
@@ -73,7 +74,7 @@ export const RenameContentModal = ({
           setIsLoading(false)
           return
         }
-        onContentRename(content, data.name)
+        onContentRename(content, data.name, mode)
         setIsLoading(false)
         setNewName("")
         onRename()

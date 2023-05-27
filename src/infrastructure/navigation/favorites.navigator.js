@@ -5,18 +5,18 @@ import { DriveMode } from "../../utils/driveMode"
 
 const Stack = createStackNavigator()
 
-export const DirectoryNavigator = () => {
+export const FavoritesNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Directory"
         component={DirectoryScreen}
         options={{
-          title: "Drive",
+          title: "Favorites",
           headerTitleAlign: "center",
         }}
         initialParams={{
-          mode: DriveMode.DRIVE,
+          mode: DriveMode.FAVORITES,
         }}
       />
     </Stack.Navigator>

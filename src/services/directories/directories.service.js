@@ -6,8 +6,6 @@ export const getDirectories = async (token, directoryId, mode) => {
     `favorite=${mode}&` +
     (directoryId !== null ? `directoryId=${directoryId}` : "")
 
-  console.log("QUERY PARAMS", queryParameters)
-
   try {
     const response = await axios.get(
       `${API_URL}/directories?${queryParameters}`,
@@ -17,7 +15,6 @@ export const getDirectories = async (token, directoryId, mode) => {
         },
       }
     )
-    console.log(response.data)
     return response.data
   } catch (error) {
     return {
@@ -56,7 +53,6 @@ export const renameContent = async (
   name,
   parentDirectoryId
 ) => {
-  console.log(name)
   try {
     const response = await axios.put(
       `${API_URL}/contents`,

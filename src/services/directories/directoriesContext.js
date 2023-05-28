@@ -5,6 +5,7 @@ import { DriveMode } from "../../utils/driveMode"
 export const DirectoriesContext = createContext()
 
 export const DirectoriesContextProvider = ({ children }) => {
+  const [recentMode, setRecentMode] = useState(DriveMode.DRIVE)
   const [currentDirectory, setCurrentDirectory] = useState(null)
   const [directories, setDirectories] = useState([])
   const [files, setFiles] = useState([])
@@ -13,6 +14,10 @@ export const DirectoriesContextProvider = ({ children }) => {
     useState(null)
   const [favorites, setFavorites] = useState([])
   const [favoritesFiles, setFavoritesFiles] = useState([])
+
+  const onTabPress = (mode) => {
+    setRecentMode(mode)
+  }
 
   const onDirectoriesLoad = (data, mode) => {
     switch (mode) {
@@ -172,41 +177,68 @@ export const DirectoriesContextProvider = ({ children }) => {
     }
   }
 
-  const onAddRemoveFavorites = (contents, mode) => {
+  const onAddRemoveFavorites = (contents) => {
     const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
     const fs = contents.filter((c) => c.type === ContentType.FILE)
 
-    setDirectories((prevDirs) =>
-      prevDirs.map((dir) => {
+    let newDirs = [...directories]
+    let newFiles = [...files]
+
+    let newFavorites = [...favorites]
+    let newFavoritesFiles = [...favoritesFiles]
+
+    newDirs = newDirs.map((dir) => {
+      if (dirs.find((d) => d.id === dir.id))
+        return { ...dir, favorite: !dir.favorite }
+      return dir
+    })
+
+    newFiles = newFiles.map((file) => {
+      if (fs.find((f) => f.id === file.id))
+        return { ...file, favorite: !file.favorite }
+      return file
+    })
+
+    if (!currentFavoritesDirectory) {
+      newFavorites = newFavorites.map((dir) => {
         if (dirs.find((d) => d.id === dir.id))
           return { ...dir, favorite: !dir.favorite }
         return dir
       })
-    )
 
-    setFiles((prevFiles) =>
-      prevFiles.map((file) => {
+      newFavorites = newFavorites.filter((dir) => dir.favorite)
+
+      for (const dir of newDirs) {
+        const index = newFavorites.findIndex(
+          (d) => d.id === dir.id && dir.favorite
+        )
+        if (index === -1) {
+          newFavorites.push({ ...dir })
+        }
+      }
+
+      newFavoritesFiles = newFavoritesFiles.map((file) => {
         if (fs.find((f) => f.id === file.id))
           return { ...file, favorite: !file.favorite }
         return file
       })
-    )
 
-    setFavorites((prevDirs) =>
-      prevDirs.map((dir) => {
-        if (dirs.find((d) => d.id === dir.id))
-          return { ...dir, favorite: !dir.favorite }
-        return dir
-      })
-    )
+      newFavoritesFiles = newFavoritesFiles.filter((file) => file.favorite)
 
-    setFavoritesFiles((prevFiles) =>
-      prevFiles.map((file) => {
-        if (fs.find((f) => f.id === file.id))
-          return { ...file, favorite: !file.favorite }
-        return file
-      })
-    )
+      for (const file of newFiles) {
+        const index = newFavoritesFiles.findIndex(
+          (f) => f.id === file.id && file.favorite
+        )
+        if (index === -1) {
+          newFavoritesFiles.push({ ...file })
+        }
+      }
+    }
+
+    setDirectories(newDirs)
+    setFiles(newFiles)
+    setFavorites(newFavorites)
+    setFavoritesFiles(newFavoritesFiles)
   }
 
   const clearDirectories = (mode) => {
@@ -227,12 +259,14 @@ export const DirectoriesContextProvider = ({ children }) => {
   return (
     <DirectoriesContext.Provider
       value={{
+        recentMode,
         currentDirectory,
         directories,
         files,
         currentFavoritesDirectory,
         favorites,
         favoritesFiles,
+        onTabPress,
         onDirectoriesLoad,
         onDirectoryAdd,
         onFilesAdd,

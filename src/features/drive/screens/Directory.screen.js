@@ -30,6 +30,7 @@ import { DriveMode } from "../../../utils/driveMode"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
+    recentMode,
     directories,
     files,
     currentDirectory,
@@ -49,6 +50,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const directoryId = route?.params?.directoryId || null
   const mode = route?.params?.mode || null
   console.log("MODE", mode)
+  console.log("RECENT MODE", recentMode)
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
@@ -75,7 +77,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   // }, [])
 
   useEffect(() => {
-    clearDirectories()
+    clearDirectories(mode)
     setIsLoaded(false)
     setDirectoryList((prevList) => {
       const index = prevList.indexOf(directoryId)
@@ -145,7 +147,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const addRemoveFavoritesHandler = async () => {
-    onAddRemoveFavorites(selectedContent, mode)
+    onAddRemoveFavorites(selectedContent)
     const response = await addRemoveFavorites(token, selectedContent)
     if (response.error) return
     setSelectedContent([])
@@ -178,6 +180,20 @@ export const DirectoryScreen = ({ route, navigation }) => {
     </HeaderRightOptionsView>
   )
 
+  const goBack = () => {
+    if (selectedContent.length > 0) {
+      setSelectedContent([])
+      return true
+    }
+    const screenName =
+      recentMode === DriveMode.DRIVE ? "Directory" : "FavoriteDirectory"
+    navigation.navigate(screenName, {
+      directoryId: directoryList[directoryList.length - 2],
+      mode: recentMode,
+    })
+    return true
+  }
+
   useEffect(() => {
     if (selectedContentLength === 0) {
       setDefaultHeader()
@@ -195,12 +211,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
     ;(async () => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
+      clearDirectories(mode)
       const data = await getDirectories(
         token,
         directoryId,
         mode === DriveMode.FAVORITES
       )
-      console.log("DATA", data)
       let title = mode === DriveMode.DRIVE ? "Drive" : "Favorites"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
@@ -220,7 +236,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
       handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
       return
     }
-    navigation.navigate("Directory", { directoryId })
+    const screenName =
+      mode === DriveMode.DRIVE ? "Directory" : "FavoriteDirectory"
+    navigation.navigate(screenName, { directoryId, mode })
   }
 
   const handleFilePress = (fileId) => {
@@ -229,18 +247,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
       return
     }
   }
-
-  const goBack = () => {
-    if (selectedContent.length > 0) {
-      setSelectedContent([])
-      return true
-    }
-    navigation.navigate("Directory", {
-      directoryId: directoryList[directoryList.length - 2],
-    })
-    return true
-  }
-
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -249,7 +255,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     // Remove back button listener on unmount
     return () => backHandler.remove()
-  })
+  }, [goBack])
 
   const loadingContent = (
     <ActivityIndicator animating color="#000" size="large" />

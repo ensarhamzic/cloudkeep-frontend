@@ -9,7 +9,7 @@ export const FavoritesNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Directory"
+        name="FavoriteDirectory"
         component={DirectoryScreen}
         options={{
           title: "Favorites",

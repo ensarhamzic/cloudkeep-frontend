@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useContext } from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { DriveScreen } from "../../features/drive/screens/Drive.screen"
 import {
@@ -11,6 +11,8 @@ import { useTheme } from "styled-components"
 import { DirectoryNavigator } from "./directory.navigator"
 import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
 import { FavoritesNavigator } from "./favorites.navigator"
+import { DirectoriesContext } from "../../services/directories/directoriesContext"
+import { DriveMode } from "../../utils/driveMode"
 
 const Tab = createBottomTabNavigator()
 
@@ -30,6 +32,7 @@ const TAB_ICONS = {
 }
 
 export const AppNavigator = () => {
+  const { onTabPress } = useContext(DirectoriesContext)
   const theme = useTheme()
 
   const createScreenOptions = useCallback(
@@ -48,10 +51,18 @@ export const AppNavigator = () => {
   )
 
   return (
-    <Tab.Navigator screenOptions={createScreenOptions}>
-      <Tab.Screen name="Drive" component={DirectoryNavigator} />
+    <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
+      <Tab.Screen
+        name="Drive"
+        component={DirectoryNavigator}
+        listeners={{ tabPress: () => onTabPress(DriveMode.DRIVE) }}
+      />
       <Tab.Screen name="Shared" component={DriveScreen} />
-      <Tab.Screen name="Favorites" component={FavoritesNavigator} />
+      <Tab.Screen
+        name="Favorites"
+        component={FavoritesNavigator}
+        listeners={{ tabPress: () => onTabPress(DriveMode.FAVORITES) }}
+      />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   )

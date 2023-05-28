@@ -65,7 +65,9 @@ export const uploadFiles = async (token, files, directoryId) => {
     const uploadedFiles = []
 
     for (const file of files) {
-      const filePath = uuid.v4()
+      const uriParts = file.uri.split(".")
+      const extension = uriParts[uriParts.length - 1].toLowerCase()
+      const filePath = uuid.v4() + "." + extension
       const storageRef = ref(storage, filePath)
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest()

@@ -70,7 +70,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   //   ;(async () => {
   //     console.log("storage", storage)
   //     const fileUrl = await getDownloadURL(
-  //       ref(storage, "48907b03-286b-4fc6-b534-494b17d42586")
+  //       ref(storage, "071165cb-a07e-40b7-ac83-b2309d017afb")
   //     )
   //     console.log(fileUrl)
   //   })()

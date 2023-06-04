@@ -29,8 +29,40 @@ import {
 import { RenameContentModal } from "../components/RenameContentModal.component"
 import { DriveMode } from "../../../utils/driveMode"
 import { MoveButton } from "../../../styles/directories.styles"
+import * as Permissions from "expo-permissions"
+import * as FileSystem from "expo-file-system"
+// import { shareAsync } from "expo-sharing"
+// import * as Linking from "expo-linking"
+// import { Launch, Pdf } from "react-native-openanything"
+
+// const downloadFile = async (fileUrl, destinationPath) => {
+//   try {
+//     const filePath = FileSystem.cacheDirectory + destinationPath
+//     const result = await FileSystem.downloadAsync(fileUrl, filePath)
+
+//     const fileExists = await FileSystem.getInfoAsync(filePath)
+//     if (fileExists.exists) {
+//       // replace file with content inside filePath
+//       const newUri = result.uri.replace("file://", "content://")
+//       Linking.openURL(newUri)
+//     } else {
+//       console.log("File does not exist:", filePath)
+//     }
+//   } catch (err) {
+//     console.log("ERR", err)
+//   }
+// }
 
 export const DirectoryScreen = ({ route, navigation }) => {
+  // useEffect(() => {
+  //   ;(async () => {
+  //     await downloadFile(
+  //       "https://firebasestorage.googleapis.com/v0/b/cloudkeep-5cabc.appspot.com/o/17f8a074-8804-4b11-afd7-42003839828a.pdf?alt=media&token=a3229aa1-6575-4e38-b9fc-77714105b5bb",
+  //       "ensar.pdf"
+  //     )
+  //   })()
+  // }, [])
+
   const {
     directories,
     files,
@@ -81,6 +113,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   // console.log("MODE", mode, directoryId)
 
+  const cancelMoveHandler = () => {
+    navigation.navigate("Main", {
+      screen: "Drive",
+      params: {
+        screen: "Directory",
+        params: { mode: DriveMode.DRIVE },
+      },
+    })
+  }
+
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       setIsLoading(true)
@@ -99,6 +141,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
         headerTitleAlign: "center",
         headerLeft: () =>
           (directoryId && <BackButton onBackPress={goBack} />) || null,
+        headerRight: () =>
+          mode === DriveMode.MOVE ? (
+            <AntDesign
+              onPress={cancelMoveHandler}
+              name="close"
+              size={40}
+              color="black"
+            />
+          ) : null,
       })
       onDirectoriesLoad(data, mode)
       setIsLoading(false)
@@ -136,7 +187,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
       headerTitleAlign: "center",
       headerLeft: () =>
         (directoryId && <BackButton onBackPress={goBack} />) || null,
-      headerRight: null,
+      headerRight: () =>
+        mode === DriveMode.MOVE ? (
+          <AntDesign
+            onPress={cancelMoveHandler}
+            name="close"
+            size={40}
+            color="black"
+          />
+        ) : null,
     })
   }
 
@@ -297,6 +356,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
         headerTitleAlign: "center",
         headerLeft: () =>
           (directoryId && <BackButton onBackPress={goBack} />) || null,
+        headerRight: () =>
+          mode === DriveMode.MOVE ? (
+            <AntDesign
+              onPress={cancelMoveHandler}
+              name="close"
+              size={40}
+              color="black"
+            />
+          ) : null,
       })
       onDirectoriesLoad(data, mode)
       setIsLoading(false)
@@ -358,6 +426,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadMediaHandler = async () => {
     setFloatingMenuOpened(false)
+    const { status: permissionStatus } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.MEDIA_LIBRARY
+    )
+    if (permissionStatus !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!")
+      return
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
@@ -371,6 +448,14 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadFileHandler = async () => {
     setFloatingMenuOpened(false)
+    const { status: permissionStatus } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.MEDIA_LIBRARY
+    )
+    if (permissionStatus !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!")
+      return
+    }
     const file = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
       multiple: true,

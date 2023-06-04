@@ -40,3 +40,30 @@ export const addRemoveFavorites = async (token, contents) => {
     }
   }
 }
+
+export const moveContent = async (
+  token,
+  contentToMove,
+  destinationDirectoryId
+) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/contents/move`,
+      {
+        contents: contentToMove,
+        destinationDirectoryId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}

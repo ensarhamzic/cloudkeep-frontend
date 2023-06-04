@@ -8,6 +8,7 @@ import { verifyTokenRequest } from "../../services/auth/auth.service"
 import { ActivityIndicator } from "react-native-paper"
 import { Text } from "react-native"
 import { CenteredActivityIndicator } from "../../styles/ui.styles"
+import { MoveContentNavigator } from "./moveContent.navigator"
 
 export const Navigation = () => {
   const [isInitial, setIsInitial] = useState(true)

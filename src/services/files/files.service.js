@@ -85,6 +85,8 @@ export const uploadFiles = async (token, files, directoryId) => {
         xhr.send()
       })
 
+      console.log("BLOB", blob)
+
       const uploadTask = uploadBytesResumable(storageRef, blob)
       uploadTask.on(
         "state_changed",

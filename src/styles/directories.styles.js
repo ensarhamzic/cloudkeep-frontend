@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { Button } from "react-native-paper"
 
 export const DirectoryPressable = styled.Pressable`
   flex: 1;
@@ -53,4 +54,17 @@ export const HorizontalLine = styled.View`
   border-bottom-color: ${(props) => props.theme.colors.darkGray};
   align-self: stretch;
   margin: 10px 0;
+`
+
+export const MoveButton = styled(Button).attrs((props) => ({
+  contentStyle: {
+    backgroundColor: props.theme.colors.brand.primary,
+  },
+}))`
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `

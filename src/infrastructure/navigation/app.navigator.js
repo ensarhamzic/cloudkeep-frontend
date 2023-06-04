@@ -1,5 +1,6 @@
-import React, { useCallback, useContext } from "react"
+import React, { useCallback } from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { createStackNavigator } from "@react-navigation/stack"
 import { DriveScreen } from "../../features/drive/screens/Drive.screen"
 import {
   Entypo,
@@ -11,10 +12,10 @@ import { useTheme } from "styled-components"
 import { DirectoryNavigator } from "./directory.navigator"
 import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
 import { FavoritesNavigator } from "./favorites.navigator"
-import { DirectoriesContext } from "../../services/directories/directoriesContext"
-import { DriveMode } from "../../utils/driveMode"
+import { MoveContentNavigator } from "./moveContent.navigator"
 
 const Tab = createBottomTabNavigator()
+const Stack = createStackNavigator()
 
 const TAB_ICONS = {
   Drive: ({ size, color }) => (
@@ -32,7 +33,6 @@ const TAB_ICONS = {
 }
 
 export const AppNavigator = () => {
-  const { onTabPress } = useContext(DirectoriesContext)
   const theme = useTheme()
 
   const createScreenOptions = useCallback(
@@ -50,20 +50,25 @@ export const AppNavigator = () => {
     [theme]
   )
 
+  const TabNavigator = () => {
+    return (
+      <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
+        <Tab.Screen name="Drive" component={DirectoryNavigator} />
+        <Tab.Screen name="Shared" component={DriveScreen} />
+        <Tab.Screen name="Favorites" component={FavoritesNavigator} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
+    )
+  }
+
   return (
-    <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
-      <Tab.Screen
-        name="Drive"
-        component={DirectoryNavigator}
-        listeners={{ tabPress: () => onTabPress(DriveMode.DRIVE) }}
-      />
-      <Tab.Screen name="Shared" component={DriveScreen} />
-      <Tab.Screen
-        name="Favorites"
-        component={FavoritesNavigator}
-        listeners={{ tabPress: () => onTabPress(DriveMode.FAVORITES) }}
-      />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-    </Tab.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Main" component={TabNavigator} />
+      <Stack.Screen name="Move" component={MoveContentNavigator} />
+    </Stack.Navigator>
   )
 }

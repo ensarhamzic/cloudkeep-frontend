@@ -62,15 +62,6 @@ const downloadFile = async (fileUrl, destinationPath) => {
         console.log(err)
         shareAsync(result.uri)
       }
-      // FileSystem.getContentUriAsync(result.uri).then((cUri) => {
-      //   console.log(cUri)
-      //   IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
-      //     data: cUri,
-      //     flags: 1,
-      //   }).catch(() => {
-      //     shareAsync(result.uri)
-      //   })
-      // })
     } else {
       shareAsync(result.uri)
     }
@@ -80,14 +71,6 @@ const downloadFile = async (fileUrl, destinationPath) => {
 }
 
 export const DirectoryScreen = ({ route, navigation }) => {
-  // useEffect(() => {
-  //   ;(async () => {
-  //     await downloadFile(
-  //       "https://firebasestorage.googleapis.com/v0/b/cloudkeep-5cabc.appspot.com/o/bfa940b6-5f95-432f-a71b-9554c111f8ab.jpg?alt=media&token=a84ebc74-98a6-4b85-ac02-65e97265ee8b",
-  //       "ensar.jpeg"
-  //     )
-  //   })()
-  // }, [])
 
   const {
     directories,
@@ -126,18 +109,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     (item) => item.type === ContentType.FILE
   )
 
-  // example usage of firebase storage
-  // useEffect(() => {
-  //   ;(async () => {
-  //     console.log("storage", storage)
-  //     const fileUrl = await getDownloadURL(
-  //       ref(storage, "071165cb-a07e-40b7-ac83-b2309d017afb")
-  //     )
-  //     console.log(fileUrl)
-  //   })()
-  // }, [])
 
-  // console.log("MODE", mode, directoryId)
 
   const cancelMoveHandler = () => {
     navigation.navigate("Main", {
@@ -504,20 +476,21 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   let dirs = []
   let fs = []
+  let content = []
 
   switch (mode) {
     case DriveMode.DRIVE:
-      dirs = directories
-      fs = files
+      dirs = directories ? [...directories] : []
+      fs = files ? [...files] : []
       break
     case DriveMode.FAVORITES:
-      dirs = favorites
-      fs = favoritesFiles
+      dirs = favorites ? [...favorites] : []
+      fs = favoritesFiles ? [...favoritesFiles] : []
       dirs = dirs.filter((dir) => dir.favorite)
       fs = fs.filter((file) => file.favorite)
       break
     case DriveMode.MOVE:
-      dirs = moveDirectories
+      dirs = moveDirectories ? [...moveDirectories]: []
       // filter just dirs that are not in contentToMove
       dirs = dirs.filter(
         (dir) =>
@@ -527,6 +500,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
       )
       break
   }
+
+  console.log("dirs", dirs)
+  console.log("fs", fs)
 
   dirs = [
     ...dirs.map((directory) => ({
@@ -540,7 +516,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   fs = [...fs.map((file) => ({ ...file, type: ContentType.FILE }))]
   if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: ContentType.FILE })
 
-  const content = [...dirs, ...fs]
+  content = [...dirs, ...fs]
 
   const handleContentLongPress = (content) => {
     if (mode === DriveMode.MOVE) return

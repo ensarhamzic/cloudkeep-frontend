@@ -43,8 +43,6 @@ import { shareAsync } from "expo-sharing"
 const downloadFile = async (fileUrl, destinationPath) => {
   try {
     // eslint-disable-next-line import/namespace
-    //
-    //
     let filePath = FileSystem.cacheDirectory + destinationPath
     // remove spaces from filePath
     filePath = filePath.replace(/\s/g, "")

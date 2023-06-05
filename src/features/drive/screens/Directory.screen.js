@@ -1,7 +1,13 @@
 import React, { useContext, useEffect, useState } from "react"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FlatList, BackHandler, Text, TouchableOpacity } from "react-native"
+import {
+  FlatList,
+  BackHandler,
+  Text,
+  TouchableOpacity,
+  Platform,
+} from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator } from "react-native-paper"
@@ -31,34 +37,54 @@ import { DriveMode } from "../../../utils/driveMode"
 import { MoveButton } from "../../../styles/directories.styles"
 import * as Permissions from "expo-permissions"
 import * as FileSystem from "expo-file-system"
-// import { shareAsync } from "expo-sharing"
-// import * as Linking from "expo-linking"
-// import { Launch, Pdf } from "react-native-openanything"
+import * as IntentLauncher from "expo-intent-launcher"
+import { shareAsync } from "expo-sharing"
+import * as Linking from "expo-linking"
+import { Launch, Pdf } from "react-native-openanything"
 
-// const downloadFile = async (fileUrl, destinationPath) => {
-//   try {
-//     const filePath = FileSystem.cacheDirectory + destinationPath
-//     const result = await FileSystem.downloadAsync(fileUrl, filePath)
+const downloadFile = async (fileUrl, destinationPath) => {
+  try {
+    const filePath = FileSystem.cacheDirectory + destinationPath
+    const result = await FileSystem.downloadAsync(fileUrl, filePath)
 
-//     const fileExists = await FileSystem.getInfoAsync(filePath)
-//     if (fileExists.exists) {
-//       // replace file with content inside filePath
-//       const newUri = result.uri.replace("file://", "content://")
-//       Linking.openURL(newUri)
-//     } else {
-//       console.log("File does not exist:", filePath)
-//     }
-//   } catch (err) {
-//     console.log("ERR", err)
-//   }
-// }
+    // replace file with content inside filePath
+    const newUri = result.uri.replace("file://", "content://")
+    // Linking.openURL(newUri)
+    if (Platform.OS === "android") {
+      try {
+        const cUri = await FileSystem.getContentUriAsync(result.uri)
+        console.log(cUri)
+        await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+          data: cUri,
+          flags: 1,
+        })
+      } catch (err) {
+        console.log(err)
+        shareAsync(result.uri)
+      }
+      // FileSystem.getContentUriAsync(result.uri).then((cUri) => {
+      //   console.log(cUri)
+      //   IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+      //     data: cUri,
+      //     flags: 1,
+      //   }).catch(() => {
+      //     shareAsync(result.uri)
+      //   })
+      // })
+    } else {
+      shareAsync(result.uri)
+    }
+  } catch (err) {
+    console.log("ERR", err)
+  }
+}
 
 export const DirectoryScreen = ({ route, navigation }) => {
   // useEffect(() => {
   //   ;(async () => {
   //     await downloadFile(
-  //       "https://firebasestorage.googleapis.com/v0/b/cloudkeep-5cabc.appspot.com/o/17f8a074-8804-4b11-afd7-42003839828a.pdf?alt=media&token=a3229aa1-6575-4e38-b9fc-77714105b5bb",
-  //       "ensar.pdf"
+  //       "https://firebasestorage.googleapis.com/v0/b/cloudkeep-5cabc.appspot.com/o/bfa940b6-5f95-432f-a71b-9554c111f8ab.jpg?alt=media&token=a84ebc74-98a6-4b85-ac02-65e97265ee8b",
+  //       "ensar.jpeg"
   //     )
   //   })()
   // }, [])
@@ -81,7 +107,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [directoryList, setDirectoryList] = useState([])
+  const [directoryList, setDirectoryList] = useState([null])
   const directoryId = route?.params?.directoryId || null
   const mode = route?.params?.mode || null
   const contentToMove = route?.params?.content || []
@@ -127,6 +153,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     const unsubscribe = navigation.addListener("focus", async () => {
       setIsLoading(true)
       clearDirectories(mode)
+      if (!directoryId) setDirectoryList([null])
       const data = await getDirectories(
         token,
         directoryId,
@@ -211,7 +238,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const moveContentClickHandler = () => {
     setSelectedContent([])
-    setDirectoryList([])
+    setDirectoryList([null])
     setIsLoaded(false)
     navigation.navigate("Move", {
       screen: "MoveContentDirectory",
@@ -395,11 +422,19 @@ export const DirectoryScreen = ({ route, navigation }) => {
     navigation.navigate(screenName, { directoryId, mode })
   }
 
-  const handleFilePress = (fileId) => {
+  const handleFilePress = async (fileId) => {
     if (selectedContent.length > 0) {
       handleContentLongPress({ id: fileId, type: ContentType.FILE })
       return
     }
+
+    let file = files.find((file) => file.id === fileId)
+    if (!file) file = favoritesFiles.find((file) => file.id === fileId)
+
+    const fileUrl = await getDownloadURL(ref(storage, file.path))
+    // get file extension from url
+    const fileExtension = fileUrl.split(".").pop()
+    downloadFile(fileUrl, file.name + "." + fileExtension)
   }
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(

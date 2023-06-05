@@ -44,11 +44,11 @@ import { Launch, Pdf } from "react-native-openanything"
 
 const downloadFile = async (fileUrl, destinationPath) => {
   try {
-    const filePath = FileSystem.cacheDirectory + destinationPath
+    let filePath = FileSystem.cacheDirectory + destinationPath
+    // remove spaces from filePath
+    filePath = filePath.replace(/\s/g, "")
     const result = await FileSystem.downloadAsync(fileUrl, filePath)
 
-    // replace file with content inside filePath
-    const newUri = result.uri.replace("file://", "content://")
     // Linking.openURL(newUri)
     if (Platform.OS === "android") {
       try {

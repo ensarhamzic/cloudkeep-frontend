@@ -39,19 +39,20 @@ import * as Permissions from "expo-permissions"
 import * as FileSystem from "expo-file-system"
 import * as IntentLauncher from "expo-intent-launcher"
 import { shareAsync } from "expo-sharing"
-import * as Linking from "expo-linking"
-import { Launch, Pdf } from "react-native-openanything"
 
 const downloadFile = async (fileUrl, destinationPath) => {
   try {
+    // eslint-disable-next-line import/namespace
     let filePath = FileSystem.cacheDirectory + destinationPath
     // remove spaces from filePath
     filePath = filePath.replace(/\s/g, "")
+    // eslint-disable-next-line import/namespace
     const result = await FileSystem.downloadAsync(fileUrl, filePath)
 
     // Linking.openURL(newUri)
     if (Platform.OS === "android") {
       try {
+        // eslint-disable-next-line import/namespace
         const cUri = await FileSystem.getContentUriAsync(result.uri)
         console.log(cUri)
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
@@ -71,7 +72,6 @@ const downloadFile = async (fileUrl, destinationPath) => {
 }
 
 export const DirectoryScreen = ({ route, navigation }) => {
-
   const {
     directories,
     files,
@@ -108,9 +108,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const selectedFiles = selectedContent.filter(
     (item) => item.type === ContentType.FILE
   )
-
-
-
   const cancelMoveHandler = () => {
     navigation.navigate("Main", {
       screen: "Drive",
@@ -490,7 +487,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       fs = fs.filter((file) => file.favorite)
       break
     case DriveMode.MOVE:
-      dirs = moveDirectories ? [...moveDirectories]: []
+      dirs = moveDirectories ? [...moveDirectories] : []
       // filter just dirs that are not in contentToMove
       dirs = dirs.filter(
         (dir) =>

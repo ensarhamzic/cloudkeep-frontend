@@ -10,7 +10,7 @@ import {
 } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
-import { ActivityIndicator } from "react-native-paper"
+import { ActivityIndicator, ProgressBar } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
 import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 import * as DocumentPicker from "expo-document-picker"
@@ -95,6 +95,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
   const [renameModalOpened, setRenameModalOpened] = useState(false)
 
+  const [uploadProgress, setUploadProgress] = useState(null)
+  const [directoryChanged, setDirectoryChanged] = useState(false)
+  const [uploaded, setUploaded] = useState(false)
+  const [uploadedDirectories, setUploadedDirectories] = useState([])
+
   const [selectedContent, setSelectedContent] = useState([])
   const selectedContentLength = selectedContent.length
   const selectedDirectories = selectedContent.filter(
@@ -112,6 +117,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
       },
     })
   }
+
+  const uploadedDirectoriesLength = uploadedDirectories.length
+  useEffect(() => {
+    if (!uploaded || directoryChanged || uploadedDirectoriesLength === 0) return
+    onFilesAdd(uploadedDirectories, mode)
+    setUploaded(false)
+    setDirectoryChanged(false)
+    setUploadedDirectories([])
+  }, [uploaded, directoryChanged, uploadedDirectoriesLength])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -257,6 +271,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setSelectedContent([])
   }
 
+  const handleProgressChange = (progress) => {
+    // divide progress by 100 and make it with one decimal point
+    const newProgress = Math.round(progress / 10) / 10
+    setUploadProgress((prev) => (prev !== newProgress ? newProgress : prev))
+  }
+
   const HeaderRight = (
     <HeaderRightOptionsView>
       {canAddToFavorites && (
@@ -290,6 +310,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   )
 
   const goBack = () => {
+    setDirectoryChanged(true)
+    setUploaded(false)
     if (selectedContent.length > 0) {
       setSelectedContent([])
       return true
@@ -363,6 +385,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [token, isLoaded, directoryId])
 
   const handleDirectoryPress = (directoryId) => {
+    setDirectoryChanged(true)
+    setUploaded(false)
     if (selectedContent.length > 0) {
       handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
       return
@@ -423,6 +447,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const uploadMediaHandler = async () => {
+    setDirectoryChanged(false)
     setFloatingMenuOpened(false)
     const { status: permissionStatus } = await Permissions.askAsync(
       Permissions.CAMERA,
@@ -440,11 +465,19 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (result.canceled) return
 
-    const response = await uploadFiles(token, result.assets, directoryId)
-    onFilesAdd(response.data, mode)
+    const response = await uploadFiles(
+      token,
+      result.assets,
+      directoryId,
+      handleProgressChange
+    )
+    setUploadedDirectories(response.data)
+    setUploaded(true)
+    setUploadProgress(null)
   }
 
   const uploadFileHandler = async () => {
+    setDirectoryChanged(false)
     setFloatingMenuOpened(false)
     const { status: permissionStatus } = await Permissions.askAsync(
       Permissions.CAMERA,
@@ -461,8 +494,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     if (file.type === "cancel") return
 
-    const response = await uploadFiles(token, [file], directoryId)
-    onFilesAdd(response.data, mode)
+    const response = await uploadFiles(
+      token,
+      [file],
+      directoryId,
+      handleProgressChange
+    )
+    setUploadedDirectories(response.data)
+    setUploaded(true)
+    setUploadProgress(null)
   }
 
   let dirs = []
@@ -531,6 +571,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   return (
     <>
+      <ProgressBar progress={uploadProgress} color="blue" />
       <AddDirectoryModal
         opened={newDirModalOpened}
         onClose={() => setNewDirModalOpened(false)}

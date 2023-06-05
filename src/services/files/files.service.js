@@ -60,11 +60,12 @@ const getFileType = ({ uri }) => {
   }
 }
 
-export const uploadFiles = async (token, files, directoryId) => {
+export const uploadFiles = async (token, files, directoryId, handler) => {
   return new Promise(async (resolve, reject) => {
     const uploadedFiles = []
 
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
       const uriParts = file.uri.split(".")
       const extension = uriParts[uriParts.length - 1].toLowerCase()
       const filePath = uuid.v4() + "." + extension
@@ -85,53 +86,51 @@ export const uploadFiles = async (token, files, directoryId) => {
         xhr.send()
       })
 
-      console.log("BLOB", blob)
+      await new Promise((resolve, reject) => {
+        const uploadTask = uploadBytesResumable(storageRef, blob)
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress = Math.round(
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+            )
 
-      const uploadTask = uploadBytesResumable(storageRef, blob)
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log(Math.round(progress))
-        },
-        (error) => {
-          console.log("ERROR", error)
-        },
-        async () => {
-          uploadedFiles.push({
-            name: file.name || filePath,
-            path: filePath,
-            type: getFileType(file),
-          })
-
-          if (uploadedFiles.length === files.length) {
-            const data = {
-              files: uploadedFiles,
-              directoryId,
-            }
-
-            try {
-              const response = await axios.post(
-                `${API_URL}/directory/upload`,
-                data,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
-              resolve(response.data)
-            } catch (error) {
-              // eslint-disable-next-line prefer-promise-reject-errors
-              reject({
-                error: true,
-                ...error.response.data,
-              })
-            }
+            handler(progress)
+          },
+          (error) => {
+            console.log("ERROR", error)
+            reject(error)
+          },
+          () => {
+            uploadedFiles.push({
+              name: file.name || filePath,
+              path: filePath,
+              type: getFileType(file),
+            })
+            resolve()
           }
-        }
-      )
+        )
+      })
+    }
+
+    const data = {
+      files: uploadedFiles,
+      directoryId,
+    }
+
+    try {
+      const response = await axios.post(`${API_URL}/directory/upload`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      resolve(response.data)
+    } catch (error) {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({
+        error: true,
+        ...error.response.data,
+      })
     }
   })
 }

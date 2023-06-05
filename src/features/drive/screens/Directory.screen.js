@@ -96,7 +96,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [renameModalOpened, setRenameModalOpened] = useState(false)
 
   const [uploadProgress, setUploadProgress] = useState(null)
-  const [directoryChanged, setDirectoryChanged] = useState(false)
+  const [targetDirectoryId, setTargetDirectoryId] = useState(-1)
   const [uploaded, setUploaded] = useState(false)
   const [uploadedDirectories, setUploadedDirectories] = useState([])
 
@@ -120,12 +120,22 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadedDirectoriesLength = uploadedDirectories.length
   useEffect(() => {
-    if (!uploaded || directoryChanged || uploadedDirectoriesLength === 0) return
+    console.log("uploaded", uploaded)
+    console.log("targetDirectoryId", targetDirectoryId, directoryId)
+    console.log("uploadedDirectoriesLength", uploadedDirectoriesLength)
+    console.log()
+    if (
+      !uploaded ||
+      targetDirectoryId === -1 ||
+      uploadedDirectoriesLength === 0 ||
+      targetDirectoryId !== directoryId
+    )
+      return
     onFilesAdd(uploadedDirectories, mode)
     setUploaded(false)
-    setDirectoryChanged(false)
+    setTargetDirectoryId(-1)
     setUploadedDirectories([])
-  }, [uploaded, directoryChanged, uploadedDirectoriesLength])
+  }, [uploaded, targetDirectoryId, directoryId, uploadedDirectoriesLength])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -310,7 +320,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   )
 
   const goBack = () => {
-    setDirectoryChanged(true)
     setUploaded(false)
     if (selectedContent.length > 0) {
       setSelectedContent([])
@@ -385,7 +394,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [token, isLoaded, directoryId])
 
   const handleDirectoryPress = (directoryId) => {
-    setDirectoryChanged(true)
     setUploaded(false)
     if (selectedContent.length > 0) {
       handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
@@ -447,7 +455,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const uploadMediaHandler = async () => {
-    setDirectoryChanged(false)
     setFloatingMenuOpened(false)
     const { status: permissionStatus } = await Permissions.askAsync(
       Permissions.CAMERA,
@@ -471,13 +478,13 @@ export const DirectoryScreen = ({ route, navigation }) => {
       directoryId,
       handleProgressChange
     )
+    setTargetDirectoryId(directoryId)
     setUploadedDirectories(response.data)
     setUploaded(true)
     setUploadProgress(null)
   }
 
   const uploadFileHandler = async () => {
-    setDirectoryChanged(false)
     setFloatingMenuOpened(false)
     const { status: permissionStatus } = await Permissions.askAsync(
       Permissions.CAMERA,
@@ -500,6 +507,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       directoryId,
       handleProgressChange
     )
+    setTargetDirectoryId(directoryId)
     setUploadedDirectories(response.data)
     setUploaded(true)
     setUploadProgress(null)

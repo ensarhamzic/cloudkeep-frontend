@@ -19,7 +19,7 @@ import { uploadFiles } from "../../../services/files/files.service"
 import { File } from "../../../components/File.component"
 import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from "../../../../config"
+import { storage } from "../../../../config" 
 import { HeaderRightOptionsView } from "../../../styles/ui.styles"
 import {
   MaterialIcons,
@@ -43,6 +43,7 @@ import { shareAsync } from "expo-sharing"
 const downloadFile = async (fileUrl, destinationPath) => {
   try {
     // eslint-disable-next-line import/namespace
+    //
     let filePath = FileSystem.cacheDirectory + destinationPath
     // remove spaces from filePath
     filePath = filePath.replace(/\s/g, "")

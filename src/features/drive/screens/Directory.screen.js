@@ -19,7 +19,7 @@ import { uploadFiles } from "../../../services/files/files.service"
 import { File } from "../../../components/File.component"
 import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
-import { storage } from "../../../../config" 
+import { storage } from "../../../../config"
 import { HeaderRightOptionsView } from "../../../styles/ui.styles"
 import {
   MaterialIcons,
@@ -54,21 +54,17 @@ const downloadFile = async (fileUrl, destinationPath) => {
       try {
         // eslint-disable-next-line import/namespace
         const cUri = await FileSystem.getContentUriAsync(result.uri)
-        console.log(cUri)
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: cUri,
           flags: 1,
         })
-      } catch (err) {
-        console.log(err)
+      } catch {
         shareAsync(result.uri)
       }
     } else {
       shareAsync(result.uri)
     }
-  } catch (err) {
-    console.log("ERR", err)
-  }
+  } catch {}
 }
 
 export const DirectoryScreen = ({ route, navigation }) => {
@@ -95,7 +91,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const mode = route?.params?.mode || null
   const contentToMove = route?.params?.content || []
 
-  console.log(mode, directoryList)
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
   const [renameModalOpened, setRenameModalOpened] = useState(false)
@@ -333,7 +328,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [selectedContentLength])
 
   useEffect(() => {
-    console.log("useEffect", isLoaded)
     ;(async () => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
@@ -497,9 +491,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
       )
       break
   }
-
-  console.log("dirs", dirs)
-  console.log("fs", fs)
 
   dirs = [
     ...dirs.map((directory) => ({

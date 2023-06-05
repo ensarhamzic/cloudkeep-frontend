@@ -6,5 +6,10 @@
     "lightgreen",
     "pdffile",
     "Pressable"
-  ]
+  ],
+  "files.autoSave": "onWindowChange",
+  "editor.tabSize": 2,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "prettier.semi": false
 }

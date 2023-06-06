@@ -91,6 +91,20 @@ export const FavoriteFileView = styled.View`
   z-index: 10;
 `
 
+export const SharedDirectoryView = styled.View`
+  position: absolute;
+  top: 55px;
+  left: 50px;
+  z-index: 10;
+`
+
+export const SharedFileView = styled.View`
+  position: absolute;
+  top: 5px;
+  left: 55px;
+  z-index: 10;
+`
+
 export const HeaderRightOptionsView = styled.View`
   flex-direction: row;
   justify-content: center;

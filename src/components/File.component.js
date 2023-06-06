@@ -4,11 +4,16 @@ import {
   Feather,
   Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
   FontAwesome5,
 } from "@expo/vector-icons"
 import { DirectoryName, FilePressable } from "../styles/directories.styles"
 import { FileType } from "../utils/fileType"
-import { FavoriteFileView, SelectedFileView } from "../styles/ui.styles"
+import {
+  FavoriteFileView,
+  SelectedFileView,
+  SharedFileView,
+} from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
 import * as Haptics from "expo-haptics"
 
@@ -81,6 +86,15 @@ export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
         <FavoriteFileView>
           <AntDesign name="star" size={25} color="gold" />
         </FavoriteFileView>
+      )}
+      {file.shared && (
+        <SharedFileView>
+          <MaterialIcons
+            name="supervisor-account"
+            size={25}
+            color={isSelected ? "gray" : "black"}
+          />
+        </SharedFileView>
       )}
       {FileIcon}
       <DirectoryName numberOfLines={2}>{file.name}</DirectoryName>

@@ -1,9 +1,10 @@
 import React from "react"
-import { Entypo, AntDesign } from "@expo/vector-icons"
+import { Entypo, AntDesign, MaterialIcons } from "@expo/vector-icons"
 import { DirectoryName, DirectoryPressable } from "../styles/directories.styles"
 import {
   FavoriteDirectoryView,
   SelectedDirectoryView,
+  SharedDirectoryView,
 } from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
 import * as Haptics from "expo-haptics"
@@ -38,6 +39,15 @@ export const Directory = ({
         <FavoriteDirectoryView>
           <AntDesign name="star" size={25} color="gold" />
         </FavoriteDirectoryView>
+      )}
+      {directory.shared && (
+        <SharedDirectoryView>
+          <MaterialIcons
+            name="supervisor-account"
+            size={25}
+            color={isSelected ? "gray" : "black"}
+          />
+        </SharedDirectoryView>
       )}
       <Entypo
         name="folder"

@@ -47,7 +47,6 @@ export const ShareScreen = ({ route, navigation }) => {
     setIsLoading(true)
     setError(null)
     const data = await shareContent(token, content, sharedUsers)
-    console.log(data)
     setIsLoading(false)
     if (data.error) {
       setError(data.message)
@@ -75,7 +74,6 @@ export const ShareScreen = ({ route, navigation }) => {
         setError(data.message)
         return
       }
-      console.log(data)
       setFoundUsers(data.users)
     })()
   }, [userQuery])

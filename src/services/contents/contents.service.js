@@ -93,7 +93,6 @@ export const shareContent = async (token, content, users) => {
 }
 
 export const getSharedUsers = async (token, content) => {
-  console.log(content)
   try {
     const response = await axios.get(
       `${API_URL}/contents/shared?contentId=${content.id}&contentType=${content.type}`,

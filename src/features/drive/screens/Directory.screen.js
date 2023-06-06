@@ -77,6 +77,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
     favoritesFiles,
     currentMoveDirectory,
     moveDirectories,
+    sharedDirectories,
+    sharedFiles,
     onDirectoriesLoad,
     onContentDelete,
     onFilesAdd,
@@ -120,10 +122,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadedDirectoriesLength = uploadedDirectories.length
   useEffect(() => {
-    console.log("uploaded", uploaded)
-    console.log("targetDirectoryId", targetDirectoryId, directoryId)
-    console.log("uploadedDirectoriesLength", uploadedDirectoriesLength)
-    console.log()
     if (
       !uploaded ||
       targetDirectoryId === -1 ||
@@ -142,14 +140,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
       setIsLoading(true)
       clearDirectories(mode)
       if (!directoryId) setDirectoryList([null])
-      const data = await getDirectories(
-        token,
-        directoryId,
-        mode === DriveMode.FAVORITES
-      )
+      const data = await getDirectories(token, directoryId, mode)
       let title = "Drive"
       if (mode === DriveMode.FAVORITES) title = "Favorites"
       if (mode === DriveMode.MOVE) title = "Move"
+      if (mode === DriveMode.SHARED) title = "Shared"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -348,8 +343,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
       })
       return true
     }
-    const screenName =
-      mode === DriveMode.DRIVE ? "Directory" : "FavoriteDirectory"
+    let screenName = "Directory"
+    if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
+    if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
     navigation.navigate(screenName, {
       directoryId: directoryList[directoryList.length - 2],
       mode,
@@ -375,14 +371,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (isLoading || !token || isLoaded) return
       setIsLoading(true)
       clearDirectories(mode)
-      const data = await getDirectories(
-        token,
-        directoryId,
-        mode === DriveMode.FAVORITES
-      )
+      const data = await getDirectories(token, directoryId, mode)
       let title = "Drive"
       if (mode === DriveMode.FAVORITES) title = "Favorites"
       if (mode === DriveMode.MOVE) title = "Move"
+      if (mode === DriveMode.SHARED) title = "Shared"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -424,8 +417,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
       return
     }
 
-    const screenName =
-      mode === DriveMode.DRIVE ? "Directory" : "FavoriteDirectory"
+    let screenName = "Directory"
+    if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
+    if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
     navigation.navigate(screenName, { directoryId, mode })
   }
 
@@ -550,6 +544,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
           )
       )
       break
+    case DriveMode.SHARED:
+      dirs = sharedDirectories ? [...sharedDirectories] : []
+      fs = sharedFiles ? [...sharedFiles] : []
+      break
   }
 
   dirs = [
@@ -567,7 +565,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   content = [...dirs, ...fs]
 
   const handleContentLongPress = (content) => {
-    if (mode === DriveMode.MOVE) return
+    if (mode === DriveMode.MOVE || mode === DriveMode.SHARED) return
     setSelectedContent((prev) => {
       const foundItem = prev.find(
         (item) => item.id === content.id && item.type === content.type
@@ -630,6 +628,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
                   onDirectoryPress={handleDirectoryPress}
                   onDirectoryLongPress={handleContentLongPress}
                   selected={selectedDirectories}
+                  mode={mode}
                 />
               )
             return (
@@ -638,6 +637,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
                 onFilePress={handleFilePress}
                 onFileLongPress={handleContentLongPress}
                 selected={selectedFiles}
+                mode={mode}
               />
             )
           }}

@@ -8,12 +8,14 @@ import {
 } from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
 import * as Haptics from "expo-haptics"
+import { DriveMode } from "../utils/driveMode"
 
 export const Directory = ({
   directory,
   onDirectoryPress,
   onDirectoryLongPress,
   selected,
+  mode,
 }) => {
   const handleDirectoryPress = () => {
     onDirectoryPress(directory.id)
@@ -35,12 +37,12 @@ export const Directory = ({
           <AntDesign name="checkcircle" size={35} color="lightgreen" />
         </SelectedDirectoryView>
       )}
-      {directory.favorite && (
+      {mode !== DriveMode.SHARED && directory.favorite && (
         <FavoriteDirectoryView>
           <AntDesign name="star" size={25} color="gold" />
         </FavoriteDirectoryView>
       )}
-      {directory.shared && (
+      {mode !== DriveMode.SHARED && directory.shared && (
         <SharedDirectoryView>
           <MaterialIcons
             name="supervisor-account"

@@ -17,6 +17,10 @@ export const DirectoriesContextProvider = ({ children }) => {
   const [currentMoveDirectory, setCurrentMoveDirectory] = useState(null)
   const [moveDirectories, setMoveDirectories] = useState([])
 
+  const [currentSharedDirectory, setCurrentSharedDirectory] = useState(null)
+  const [sharedDirectories, setSharedDirectories] = useState([])
+  const [sharedFiles, setSharedFiles] = useState([])
+
   const onDirectoriesLoad = (data, mode) => {
     switch (mode) {
       case DriveMode.DRIVE:
@@ -32,6 +36,11 @@ export const DirectoriesContextProvider = ({ children }) => {
       case DriveMode.MOVE:
         setCurrentMoveDirectory(data.currentDirectory)
         setMoveDirectories(data.directories)
+        break
+      case DriveMode.SHARED:
+        setCurrentSharedDirectory(data.currentDirectory)
+        setSharedDirectories(data.directories)
+        setSharedFiles(data.files)
         break
     }
   }
@@ -181,6 +190,12 @@ export const DirectoriesContextProvider = ({ children }) => {
       case DriveMode.MOVE:
         setCurrentMoveDirectory(null)
         setMoveDirectories([])
+        break
+      case DriveMode.SHARED:
+        setCurrentSharedDirectory(null)
+        setSharedDirectories([])
+        setSharedFiles([])
+        break
     }
   }
 
@@ -195,6 +210,9 @@ export const DirectoriesContextProvider = ({ children }) => {
         favoritesFiles,
         currentMoveDirectory,
         moveDirectories,
+        currentSharedDirectory,
+        sharedDirectories,
+        sharedFiles,
         onDirectoriesLoad,
         onDirectoryAdd,
         onFilesAdd,

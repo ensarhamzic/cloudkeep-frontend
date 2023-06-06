@@ -16,8 +16,15 @@ import {
 } from "../styles/ui.styles"
 import { ContentType } from "../utils/contentType"
 import * as Haptics from "expo-haptics"
+import { DriveMode } from "../utils/driveMode"
 
-export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
+export const File = ({
+  file,
+  onFilePress,
+  onFileLongPress,
+  selected,
+  mode,
+}) => {
   const handleFilePress = () => {
     onFilePress(file.id)
   }
@@ -82,12 +89,12 @@ export const File = ({ file, onFilePress, onFileLongPress, selected }) => {
           <AntDesign name="checkcircle" size={35} color="lightgreen" />
         </SelectedFileView>
       )}
-      {file.favorite && (
+      {mode !== DriveMode.SHARED && file.favorite && (
         <FavoriteFileView>
           <AntDesign name="star" size={25} color="gold" />
         </FavoriteFileView>
       )}
-      {file.shared && (
+      {mode !== DriveMode.SHARED && file.shared && (
         <SharedFileView>
           <MaterialIcons
             name="supervisor-account"

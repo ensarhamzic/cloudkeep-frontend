@@ -76,8 +76,7 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
           resolve(xhr.response)
         }
 
-        xhr.onerror = function (e) {
-          console.log(e)
+        xhr.onerror = function () {
           reject(new TypeError("Network request failed"))
         }
 
@@ -98,7 +97,6 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
             handler(progress)
           },
           (error) => {
-            console.log("ERROR", error)
             reject(error)
           },
           () => {

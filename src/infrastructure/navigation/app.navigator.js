@@ -1,7 +1,6 @@
 import React, { useCallback } from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createStackNavigator } from "@react-navigation/stack"
-import { DriveScreen } from "../../features/drive/screens/Drive.screen"
 import {
   Entypo,
   FontAwesome,
@@ -14,6 +13,7 @@ import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
 import { FavoritesNavigator } from "./favorites.navigator"
 import { MoveContentNavigator } from "./moveContent.navigator"
 import { ShareScreen } from "../../features/share/Share.screen"
+import { SharedNavigator } from "./shared.navigator"
 
 const Tab = createBottomTabNavigator()
 const Stack = createStackNavigator()
@@ -55,7 +55,7 @@ export const AppNavigator = () => {
     return (
       <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
         <Tab.Screen name="Drive" component={DirectoryNavigator} />
-        <Tab.Screen name="Shared" component={DriveScreen} />
+        <Tab.Screen name="Shared" component={SharedNavigator} />
         <Tab.Screen name="Favorites" component={FavoritesNavigator} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

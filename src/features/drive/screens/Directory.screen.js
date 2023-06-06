@@ -224,6 +224,13 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setRenameModalOpened(true)
   }
 
+  const shareContentHandler = () => {
+    setSelectedContent([])
+    navigation.navigate("Share", {
+      content: selectedContent[0],
+    })
+  }
+
   const moveContentClickHandler = () => {
     setSelectedContent([])
     setDirectoryList([null])
@@ -306,6 +313,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
             size={24}
             color="black"
           />
+        </TouchableOpacity>
+      )}
+      {selectedContentLength === 1 && (
+        <TouchableOpacity onPress={shareContentHandler}>
+          <MaterialIcons name="supervisor-account" size={24} color="black" />
         </TouchableOpacity>
       )}
       {mode === DriveMode.DRIVE && (

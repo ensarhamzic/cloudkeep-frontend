@@ -98,3 +98,30 @@ export const HeaderRightOptionsView = styled.View`
   gap: 15px;
   margin-right: 10px;
 `
+
+export const UserListView = styled.ScrollView`
+  padding: 10px;
+`
+
+export const UserCardTouchableOpacity = styled.TouchableOpacity`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid ${(props) => props.theme.colors.darkGray};
+  border-radius: 10px;
+  margin-bottom: 10px;
+`
+
+export const ProfilePictureView = styled.View`
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+`
+
+export const ProfilePictureImage = styled.Image`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+`

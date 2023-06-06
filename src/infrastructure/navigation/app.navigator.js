@@ -13,6 +13,7 @@ import { DirectoryNavigator } from "./directory.navigator"
 import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
 import { FavoritesNavigator } from "./favorites.navigator"
 import { MoveContentNavigator } from "./moveContent.navigator"
+import { ShareScreen } from "../../features/share/Share.screen"
 
 const Tab = createBottomTabNavigator()
 const Stack = createStackNavigator()
@@ -69,6 +70,7 @@ export const AppNavigator = () => {
     >
       <Stack.Screen name="Main" component={TabNavigator} />
       <Stack.Screen name="Move" component={MoveContentNavigator} />
+      <Stack.Screen name="Share" component={ShareScreen} />
     </Stack.Navigator>
   )
 }

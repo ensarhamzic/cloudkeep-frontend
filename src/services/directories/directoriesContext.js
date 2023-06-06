@@ -166,8 +166,6 @@ export const DirectoriesContextProvider = ({ children }) => {
     }
   }
 
-  const onContentShare = (content, users, mode) => {}
-
   const clearDirectories = (mode) => {
     switch (mode) {
       case DriveMode.DRIVE:
@@ -204,7 +202,6 @@ export const DirectoriesContextProvider = ({ children }) => {
         onContentDelete,
         onAddRemoveFavorites,
         clearDirectories,
-        onContentShare,
       }}
     >
       {children}

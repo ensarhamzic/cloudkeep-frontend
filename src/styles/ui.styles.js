@@ -125,3 +125,9 @@ export const ProfilePictureImage = styled.Image`
   height: 50px;
   border-radius: 25px;
 `
+
+export const HeadlineText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+`

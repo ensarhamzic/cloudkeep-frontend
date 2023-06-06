@@ -1,26 +1,27 @@
 import React, { useState, useEffect, useContext } from "react"
 import { Text, BackHandler } from "react-native"
 import { Spacer } from "../../components/Spacer.component"
-import { AcceptButton, ModalActionsView } from "../../styles/ui.styles"
+import { AcceptButton, HeadlineText } from "../../styles/ui.styles"
 import { ErrorText, FormInput } from "../../styles/auth.styles"
 import { ActivityIndicator } from "react-native-paper"
 import { UserList } from "../../components/UserList.component"
 import { searchUsers } from "../../services/users/users.service"
 import { AuthContext } from "../../services/auth/authContext"
-import { DirectoriesContext } from "../../services/directories/directoriesContext"
 import { HorizontalLine } from "../../styles/directories.styles"
+import {
+  shareContent,
+  getSharedUsers,
+} from "../../services/contents/contents.service"
 
 export const ShareScreen = ({ route, navigation }) => {
   const { token } = useContext(AuthContext)
-  const { onContentShare } = useContext(DirectoriesContext)
   const [userQuery, setUserQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [foundUsers, setFoundUsers] = useState([])
   const [sharedUsers, setSharedUsers] = useState([])
-  const [formSubmitted, setFormSubmitted] = useState(false)
-
-  console.log(route?.params)
+  const content = route?.params?.content
+  const contentId = content?.id
 
   useEffect(() => {
     navigation.setOptions({
@@ -29,7 +30,31 @@ export const ShareScreen = ({ route, navigation }) => {
     })
   }, [navigation])
 
-  const shareContentHandler = async () => {}
+  useEffect(() => {
+    ;(async () => {
+      if (contentId) {
+        const data = await getSharedUsers(token, content)
+        if (data.error) {
+          setError(data.message)
+          return
+        }
+        setSharedUsers(data.users)
+      }
+    })()
+  }, [contentId])
+
+  const shareContentHandler = async () => {
+    setIsLoading(true)
+    setError(null)
+    const data = await shareContent(token, content, sharedUsers)
+    console.log(data)
+    setIsLoading(false)
+    if (data.error) {
+      setError(data.message)
+      return
+    }
+    navigation.goBack()
+  }
 
   const onCancel = () => {
     setUserQuery("")
@@ -89,10 +114,13 @@ export const ShareScreen = ({ route, navigation }) => {
       )}
       <UserList users={foundUsers} onUserPress={userPressHandler} />
       <HorizontalLine />
+      {sharedUsers.length > 0 && <HeadlineText>Shared with:</HeadlineText>}
       <UserList users={sharedUsers} onUserPress={userPressHandler} />
       <Spacer size="large">
         <AcceptButton onPress={shareContentHandler} disabled={isLoading}>
-          <Text>Share</Text>
+          <Text>
+            {sharedUsers.length === 0 ? "Don't share with anyone" : "Share"}
+          </Text>
         </AcceptButton>
       </Spacer>
       {isLoading && (

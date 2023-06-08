@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Platform,
+  View,
 } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { getDirectories } from "../../../services/directories/directories.service"
@@ -39,6 +40,9 @@ import * as Permissions from "expo-permissions"
 import * as FileSystem from "expo-file-system"
 import * as IntentLauncher from "expo-intent-launcher"
 import { shareAsync } from "expo-sharing"
+import { SortType } from "../../../utils/sortType"
+import { SortOrder } from "../../../utils/sortOrder"
+import { SortBar } from "../components/SortBar.component"
 
 const downloadFile = async (fileUrl, destinationPath) => {
   try {
@@ -65,6 +69,22 @@ const downloadFile = async (fileUrl, destinationPath) => {
       shareAsync(result.uri)
     }
   } catch {}
+}
+
+const sortData = (data, sortType, sortOrder) => {
+  if (sortType === SortType.NAME)
+    return sortOrder === SortOrder.ASCENDING
+      ? data.sort((a, b) => a.name.localeCompare(b.name))
+      : data.sort((a, b) => b.name.localeCompare(a.name))
+  else if (sortType === SortType.CREATED_AT)
+    return sortOrder === SortOrder.ASCENDING
+      ? data.sort((a, b) => a.dateCreated - b.dateCreated)
+      : data.sort((a, b) => b.dateCreated - a.dateCreated)
+  else if (sortType === SortType.MODIFIED_AT)
+    return sortOrder === SortOrder.ASCENDING
+      ? data.sort((a, b) => a.dateModified - b.dateModified)
+      : data.sort((a, b) => b.dateModified - a.dateModified)
+  return data
 }
 
 export const DirectoryScreen = ({ route, navigation }) => {
@@ -96,6 +116,10 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
   const [renameModalOpened, setRenameModalOpened] = useState(false)
+
+  const [sortType, setSortType] = useState(SortType.NAME)
+  const [sortOrder, setSortOrder] = useState(SortOrder.ASCENDING)
+  const [sortMenuOpened, setSortMenuOpened] = useState(false)
 
   const [uploadProgress, setUploadProgress] = useState(null)
   const [targetDirectoryId, setTargetDirectoryId] = useState(-1)
@@ -556,10 +580,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
       type: ContentType.DIRECTORY,
     })),
   ]
+  dirs = sortData(dirs, sortType, sortOrder)
   if (dirs.length % 2 === 1)
     dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
 
   fs = [...fs.map((file) => ({ ...file, type: ContentType.FILE }))]
+  fs = sortData(fs, sortType, sortOrder)
   if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: ContentType.FILE })
 
   content = [...dirs, ...fs]
@@ -587,9 +613,26 @@ export const DirectoryScreen = ({ route, navigation }) => {
     })
   }
 
+  const sortOrderChangeHandler = (order) => {
+    setSortOrder(order)
+    setSortMenuOpened(false)
+  }
+  const sortTypeChangeHandler = (type) => {
+    setSortType(type)
+    setSortMenuOpened(false)
+  }
+
   return (
     <>
       <ProgressBar progress={uploadProgress} color="blue" />
+      <SortBar
+        sortType={sortType}
+        sortOrder={sortOrder}
+        onSortTypeChange={sortTypeChangeHandler}
+        onSortOrderChange={sortOrderChangeHandler}
+        sortMenuOpened={sortMenuOpened}
+        onSortTypePress={() => setSortMenuOpened(!sortMenuOpened)}
+      />
       <AddDirectoryModal
         opened={newDirModalOpened}
         onClose={() => setNewDirModalOpened(false)}

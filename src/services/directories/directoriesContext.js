@@ -97,7 +97,8 @@ export const DirectoriesContextProvider = ({ children }) => {
         case DriveMode.DRIVE:
           setDirectories((prevDirs) =>
             prevDirs.map((dir) => {
-              if (dir.id === content.id) return { ...dir, name }
+              if (dir.id === content.id)
+                return { ...dir, name, dateModified: new Date() }
               return dir
             })
           )
@@ -105,7 +106,8 @@ export const DirectoriesContextProvider = ({ children }) => {
         case DriveMode.FAVORITES:
           setFavorites((prevDirs) =>
             prevDirs.map((dir) => {
-              if (dir.id === content.id) return { ...dir, name }
+              if (dir.id === content.id)
+                return { ...dir, name, dateModified: new Date() }
               return dir
             })
           )
@@ -116,7 +118,8 @@ export const DirectoriesContextProvider = ({ children }) => {
         case DriveMode.DRIVE:
           setFiles((prevFiles) =>
             prevFiles.map((file) => {
-              if (file.id === content.id) return { ...file, name }
+              if (file.id === content.id)
+                return { ...file, name, dateModified: new Date() }
               return file
             })
           )
@@ -124,7 +127,8 @@ export const DirectoriesContextProvider = ({ children }) => {
         case DriveMode.FAVORITES:
           setFavoritesFiles((prevFiles) =>
             prevFiles.map((file) => {
-              if (file.id === content.id) return { ...file, name }
+              if (file.id === content.id)
+                return { ...file, name, dateModified: new Date() }
               return file
             })
           )

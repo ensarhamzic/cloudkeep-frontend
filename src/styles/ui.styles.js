@@ -145,3 +145,26 @@ export const HeadlineText = styled.Text`
   font-weight: bold;
   text-align: center;
 `
+
+export const SortBarView = styled.View`
+  position: relative;
+  z-index: 10;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: center;
+  margin: 10px;
+  margin-left: 30px;
+`
+
+export const SortMenuView = styled.View`
+  position: absolute;
+  top: 50px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: ${(props) => props.theme.colors.white};
+`

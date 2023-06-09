@@ -13,9 +13,10 @@ import { renameContent } from "../../../services/directories/directories.service
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
 import { ActivityIndicator } from "react-native-paper"
+import { DriveMode } from "../../../utils/driveMode"
+import { ContentType } from "../../../utils/contentType"
 
 export const RenameContentModal = ({
-  name,
   content,
   opened,
   onClose,
@@ -23,13 +24,33 @@ export const RenameContentModal = ({
   onRename,
   mode,
 }) => {
-  const { onContentRename } = useContext(DirectoriesContext)
+  const { onContentRename, directories, files, favorites, favoritesFiles } =
+    useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
-  const [newName, setNewName] = useState(name)
+  const [newName, setNewName] = useState("")
   const [newNameError, setNewNameError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [formSubmitted, setFormSubmitted] = useState(false)
+
+  let name = ""
+  if (mode === DriveMode.DRIVE) {
+    if (content?.type === ContentType.DIRECTORY) {
+      const dir = directories.find((dir) => dir?.id === content?.id)
+      name = dir?.name
+    } else {
+      const file = files.find((file) => file?.id === content?.id)
+      name = file?.name
+    }
+  } else if (mode === DriveMode.FAVORITES) {
+    if (content?.type === ContentType.DIRECTORY) {
+      const dir = favorites.find((dir) => dir?.id === content?.id)
+      name = dir?.name
+    } else {
+      const file = favoritesFiles.find((file) => file?.id === content?.id)
+      name = file?.name
+    }
+  }
 
   useEffect(() => {
     setNewName(name)

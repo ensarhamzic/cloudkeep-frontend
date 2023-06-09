@@ -1,15 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { AuthContext } from "../../../services/auth/authContext"
-import {
-  FlatList,
-  BackHandler,
-  Text,
-  TouchableOpacity,
-  Platform,
-  View,
-} from "react-native"
-import { Directory } from "../../../components/Directory.component"
+import { BackHandler } from "react-native"
 import { getDirectories } from "../../../services/directories/directories.service"
 import { ActivityIndicator, ProgressBar } from "react-native-paper"
 import { FloatingMenu } from "../components/FloatingMenu.component"
@@ -17,16 +9,10 @@ import { AddDirectoryModal } from "../components/AddDirectoryModal.component"
 import * as DocumentPicker from "expo-document-picker"
 import * as ImagePicker from "expo-image-picker"
 import { uploadFiles } from "../../../services/files/files.service"
-import { File } from "../../../components/File.component"
 import { BackButton } from "../../../components/BackButton.component"
 import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../../../config"
-import { HeaderRightOptionsView } from "../../../styles/ui.styles"
-import {
-  MaterialIcons,
-  AntDesign,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons"
+import { AntDesign } from "@expo/vector-icons"
 import { ContentType } from "../../../utils/contentType"
 import {
   addRemoveFavorites,
@@ -37,68 +23,20 @@ import { RenameContentModal } from "../components/RenameContentModal.component"
 import { DriveMode } from "../../../utils/driveMode"
 import { MoveButton } from "../../../styles/directories.styles"
 import * as Permissions from "expo-permissions"
-import * as FileSystem from "expo-file-system"
-import * as IntentLauncher from "expo-intent-launcher"
-import { shareAsync } from "expo-sharing"
 import { SortType } from "../../../utils/sortType"
 import { SortOrder } from "../../../utils/sortOrder"
 import { SortBar } from "../components/SortBar.component"
-
-const downloadFile = async (fileUrl, destinationPath) => {
-  try {
-    // eslint-disable-next-line import/namespace
-    let filePath = FileSystem.cacheDirectory + destinationPath
-    // remove spaces from filePath
-    filePath = filePath.replace(/\s/g, "")
-    // eslint-disable-next-line import/namespace
-    const result = await FileSystem.downloadAsync(fileUrl, filePath)
-
-    // Linking.openURL(newUri)
-    if (Platform.OS === "android") {
-      try {
-        // eslint-disable-next-line import/namespace
-        const cUri = await FileSystem.getContentUriAsync(result.uri)
-        await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
-          data: cUri,
-          flags: 1,
-        })
-      } catch {
-        shareAsync(result.uri)
-      }
-    } else {
-      shareAsync(result.uri)
-    }
-  } catch {}
-}
-
-const sortData = (data, sortType, sortOrder) => {
-  if (sortType === SortType.NAME)
-    return sortOrder === SortOrder.ASCENDING
-      ? data.sort((a, b) => a.name.localeCompare(b.name))
-      : data.sort((a, b) => b.name.localeCompare(a.name))
-  else if (sortType === SortType.CREATED_AT)
-    return sortOrder === SortOrder.ASCENDING
-      ? data.sort((a, b) => a.dateCreated - b.dateCreated)
-      : data.sort((a, b) => b.dateCreated - a.dateCreated)
-  else if (sortType === SortType.MODIFIED_AT)
-    return sortOrder === SortOrder.ASCENDING
-      ? data.sort((a, b) => a.dateModified - b.dateModified)
-      : data.sort((a, b) => b.dateModified - a.dateModified)
-  return data
-}
+import { ContentList } from "../components/ContentList"
+import { downloadFile } from "../../../utils/functions"
+import { HeaderRight } from "../components/HeaderRight"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
-    directories,
     files,
     currentDirectory,
     currentFavoritesDirectory,
-    favorites,
     favoritesFiles,
     currentMoveDirectory,
-    moveDirectories,
-    sharedDirectories,
-    sharedFiles,
     onDirectoriesLoad,
     onContentDelete,
     onFilesAdd,
@@ -263,43 +201,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
     })
   }
 
-  let canAddToFavorites = true
-  let canRemoveFromFavorites = true
-
-  for (let i = 0; i < selectedContent.length; i++) {
-    if (
-      selectedContent[i].type === ContentType.DIRECTORY &&
-      directories.find((dir) => dir.id === selectedContent[i].id)?.favorite
-    ) {
-      canAddToFavorites = false
-      break
-    }
-    if (
-      selectedContent[i].type === ContentType.FILE &&
-      files.find((file) => file.id === selectedContent[i].id)?.favorite
-    ) {
-      canAddToFavorites = false
-      break
-    }
-  }
-
-  for (let i = 0; i < selectedContent.length; i++) {
-    if (
-      selectedContent[i].type === ContentType.DIRECTORY &&
-      !directories.find((dir) => dir.id === selectedContent[i].id)?.favorite
-    ) {
-      canRemoveFromFavorites = false
-      break
-    }
-    if (
-      selectedContent[i].type === ContentType.FILE &&
-      !files.find((file) => file.id === selectedContent[i].id)?.favorite
-    ) {
-      canRemoveFromFavorites = false
-      break
-    }
-  }
-
   const addRemoveFavoritesHandler = async () => {
     onAddRemoveFavorites(selectedContent, mode)
     const response = await addRemoveFavorites(token, selectedContent)
@@ -312,43 +213,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
     const newProgress = Math.round(progress / 10) / 10
     setUploadProgress((prev) => (prev !== newProgress ? newProgress : prev))
   }
-
-  const HeaderRight = (
-    <HeaderRightOptionsView>
-      {canAddToFavorites && (
-        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
-          <AntDesign name="star" size={24} color="black" />
-        </TouchableOpacity>
-      )}
-      {canRemoveFromFavorites && (
-        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
-          <MaterialCommunityIcons name="star-off" size={24} color="black" />
-        </TouchableOpacity>
-      )}
-      {selectedContentLength === 1 && (
-        <TouchableOpacity onPress={renamePressHandler}>
-          <MaterialIcons
-            name="drive-file-rename-outline"
-            size={24}
-            color="black"
-          />
-        </TouchableOpacity>
-      )}
-      {selectedContentLength === 1 && (
-        <TouchableOpacity onPress={shareContentHandler}>
-          <MaterialIcons name="supervisor-account" size={24} color="black" />
-        </TouchableOpacity>
-      )}
-      {mode === DriveMode.DRIVE && (
-        <TouchableOpacity onPress={moveContentClickHandler}>
-          <MaterialCommunityIcons name="folder-move" size={24} color="black" />
-        </TouchableOpacity>
-      )}
-      <TouchableOpacity onPress={deleteContentHandler}>
-        <MaterialIcons name="delete" size={24} color="black" />
-      </TouchableOpacity>
-    </HeaderRightOptionsView>
-  )
 
   const goBack = () => {
     setUploaded(false)
@@ -386,7 +250,17 @@ export const DirectoryScreen = ({ route, navigation }) => {
       title: `${selectedContentLength} selected`,
       headerTitleAlign: "left",
       headerLeft: () => <BackButton onBackPress={goBack} cancel />,
-      headerRight: () => HeaderRight,
+      headerRight: () => (
+        <HeaderRight
+          selectedContent={selectedContent}
+          addRemoveFavoritesHandler={addRemoveFavoritesHandler}
+          renamePressHandler={renamePressHandler}
+          shareContentHandler={shareContentHandler}
+          mode={mode}
+          moveContentClickHandler={moveContentClickHandler}
+          deleteContentHandler={deleteContentHandler}
+        />
+      ),
     })
   }, [selectedContentLength])
 
@@ -448,6 +322,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const handleFilePress = async (fileId) => {
+    if (mode === DriveMode.MOVE) return
     if (selectedContent.length > 0) {
       handleContentLongPress({ id: fileId, type: ContentType.FILE })
       return
@@ -543,53 +418,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setUploadProgress(null)
   }
 
-  let dirs = []
-  let fs = []
-  let content = []
-
-  switch (mode) {
-    case DriveMode.DRIVE:
-      dirs = directories ? [...directories] : []
-      fs = files ? [...files] : []
-      break
-    case DriveMode.FAVORITES:
-      dirs = favorites ? [...favorites] : []
-      fs = favoritesFiles ? [...favoritesFiles] : []
-      dirs = dirs.filter((dir) => dir.favorite)
-      fs = fs.filter((file) => file.favorite)
-      break
-    case DriveMode.MOVE:
-      dirs = moveDirectories ? [...moveDirectories] : []
-      // filter just dirs that are not in contentToMove
-      dirs = dirs.filter(
-        (dir) =>
-          !contentToMove.find(
-            (item) => item.id === dir.id && item.type === ContentType.DIRECTORY
-          )
-      )
-      break
-    case DriveMode.SHARED:
-      dirs = sharedDirectories ? [...sharedDirectories] : []
-      fs = sharedFiles ? [...sharedFiles] : []
-      break
-  }
-
-  dirs = [
-    ...dirs.map((directory) => ({
-      ...directory,
-      type: ContentType.DIRECTORY,
-    })),
-  ]
-  dirs = sortData(dirs, sortType, sortOrder)
-  if (dirs.length % 2 === 1)
-    dirs.push({ id: -1, name: "", type: ContentType.DIRECTORY })
-
-  fs = [...fs.map((file) => ({ ...file, type: ContentType.FILE }))]
-  fs = sortData(fs, sortType, sortOrder)
-  if (fs.length % 2 === 1) fs.push({ id: -1, name: "", type: ContentType.FILE })
-
-  content = [...dirs, ...fs]
-
   const handleContentLongPress = (content) => {
     if (mode === DriveMode.MOVE || mode === DriveMode.SHARED) return
     setSelectedContent((prev) => {
@@ -644,13 +472,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
         opened={renameModalOpened}
         onClose={() => setRenameModalOpened(false)}
         parentDirectoryId={directoryId}
-        name={
-          content.find(
-            (item) =>
-              item.id === selectedContent[0]?.id &&
-              item.type === selectedContent[0]?.type
-          )?.name
-        }
         content={selectedContent[0]}
         onRename={() => {
           setRenameModalOpened(false)
@@ -659,36 +480,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
         mode={mode}
       />
       {isLoading && loadingContent}
-      {!isLoading && content.length === 0 && <Text>No content</Text>}
-      {!isLoading && content.length > 0 && (
-        <FlatList
-          data={content}
-          renderItem={({ item }) => {
-            if (item.type === ContentType.DIRECTORY)
-              return (
-                <Directory
-                  directory={item}
-                  onDirectoryPress={handleDirectoryPress}
-                  onDirectoryLongPress={handleContentLongPress}
-                  selected={selectedDirectories}
-                  mode={mode}
-                />
-              )
-            return (
-              <File
-                file={item}
-                onFilePress={handleFilePress}
-                onFileLongPress={handleContentLongPress}
-                selected={selectedFiles}
-                mode={mode}
-              />
-            )
-          }}
-          keyExtractor={(item) =>
-            item.type === ContentType.DIRECTORY ? `d${item.id}` : `f${item.id}`
-          }
-          showsHorizontalScrollIndicator={false}
-          numColumns={2}
+      {!isLoading && (
+        <ContentList
+          handleDirectoryPress={handleDirectoryPress}
+          handleContentLongPress={handleContentLongPress}
+          selectedDirectories={selectedDirectories}
+          handleFilePress={handleFilePress}
+          selectedFiles={selectedFiles}
+          mode={mode}
+          contentToMove={contentToMove}
         />
       )}
       {mode === DriveMode.DRIVE && (

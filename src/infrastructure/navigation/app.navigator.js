@@ -22,6 +22,9 @@ const TAB_ICONS = {
   Drive: ({ size, color }) => (
     <Entypo name="onedrive" size={size} color={color} />
   ),
+  Search: ({ size, color }) => (
+    <FontAwesome name="search" size={size} color={color} />
+  ),
   Shared: ({ size, color }) => (
     <FontAwesome name="share-alt" size={size} color={color} />
   ),
@@ -55,6 +58,7 @@ export const AppNavigator = () => {
     return (
       <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
         <Tab.Screen name="Drive" component={DirectoryNavigator} />
+        <Tab.Screen name="Search" component={DirectoryNavigator} />
         <Tab.Screen name="Shared" component={SharedNavigator} />
         <Tab.Screen name="Favorites" component={FavoritesNavigator} />
         <Tab.Screen name="Settings" component={SettingsScreen} />

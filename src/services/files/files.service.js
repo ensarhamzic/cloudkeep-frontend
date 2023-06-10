@@ -104,6 +104,7 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
               name: file.name || filePath,
               path: filePath,
               type: getFileType(file),
+              size: blob.size,
             })
             resolve()
           }

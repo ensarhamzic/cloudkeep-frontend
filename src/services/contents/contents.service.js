@@ -4,7 +4,7 @@ import { DriveMode } from "../../utils/driveMode"
 
 export const deleteContent = async (token, contents, mode) => {
   try {
-    let queryParameters = `permanent=${
+    const queryParameters = `permanent=${
       mode === DriveMode.TRASH ? "true" : "false"
     }`
     console.log(queryParameters)

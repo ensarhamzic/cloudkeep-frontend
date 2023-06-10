@@ -444,6 +444,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
       allowsMultipleSelection: true,
     })
 
+    console.log(result)
+
     if (result.canceled) return
 
     const response = await uploadFiles(
@@ -472,6 +474,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
       copyToCacheDirectory: true,
       multiple: true,
     })
+
+    console.log(file)
 
     if (file.type === "cancel") return
 

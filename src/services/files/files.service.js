@@ -133,3 +133,19 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
     }
   })
 }
+
+export const getFilesSize = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/files/size`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}

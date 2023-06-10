@@ -5,222 +5,85 @@ import { DriveMode } from "../../utils/driveMode"
 export const DirectoriesContext = createContext()
 
 export const DirectoriesContextProvider = ({ children }) => {
-  const [currentDirectory, setCurrentDirectory] = useState(null)
   const [directories, setDirectories] = useState([])
   const [files, setFiles] = useState([])
 
-  const [currentFavoritesDirectory, setCurrentFavoritesDirectory] =
-    useState(null)
-  const [favorites, setFavorites] = useState([])
-  const [favoritesFiles, setFavoritesFiles] = useState([])
-
-  const [currentMoveDirectory, setCurrentMoveDirectory] = useState(null)
-  const [moveDirectories, setMoveDirectories] = useState([])
-  const [moveFiles, setMoveFiles] = useState([])
-
-  const [currentSharedDirectory, setCurrentSharedDirectory] = useState(null)
-  const [sharedDirectories, setSharedDirectories] = useState([])
-  const [sharedFiles, setSharedFiles] = useState([])
-
-  const onDirectoriesLoad = (data, mode) => {
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setCurrentDirectory(data.currentDirectory)
-        setDirectories(data.directories)
-        setFiles(data.files)
-        break
-      case DriveMode.FAVORITES:
-        setCurrentFavoritesDirectory(data.currentDirectory)
-        setFavorites(data.directories)
-        setFavoritesFiles(data.files)
-        break
-      case DriveMode.MOVE:
-        setCurrentMoveDirectory(data.currentDirectory)
-        setMoveDirectories(data.directories)
-        setMoveFiles(data.files)
-        break
-      case DriveMode.SHARED:
-        setCurrentSharedDirectory(data.currentDirectory)
-        setSharedDirectories(data.directories)
-        setSharedFiles(data.files)
-        break
-    }
+  const onDirectoriesLoad = (data) => {
+    setDirectories(data.directories)
+    setFiles(data.files)
   }
 
-  const onDirectoryAdd = (directory, mode) => {
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setDirectories((prevDirs) => [...prevDirs, directory])
-        break
-      case DriveMode.FAVORITES:
-        setFavorites((prevDirs) => [...prevDirs, directory])
-        break
-    }
+  const onDirectoryAdd = (directory) => {
+    setDirectories((prevDirs) => [...prevDirs, directory])
   }
 
-  const onFilesAdd = (files, mode) => {
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setFiles((prevFiles) => [...prevFiles, ...files])
-        break
-      case DriveMode.FAVORITES:
-        setFavoritesFiles((prevFiles) => [...prevFiles, ...files])
-        break
-    }
+  const onFilesAdd = (files) => {
+    setFiles((prevFiles) => [...prevFiles, ...files])
   }
 
-  const onContentDelete = (contents, mode) => {
+  const onContentDelete = (contents) => {
     const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
     const fs = contents.filter((c) => c.type === ContentType.FILE)
 
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setDirectories((prevDirs) =>
-          prevDirs.filter((dir) => !dirs.find((d) => d.id === dir.id))
-        )
-        setFiles((prevFiles) =>
-          prevFiles.filter((file) => !fs.find((f) => f.id === file.id))
-        )
-        break
-      case DriveMode.FAVORITES:
-        setFavorites((prevDirs) =>
-          prevDirs.filter((dir) => !dirs.find((d) => d.id === dir.id))
-        )
-        setFavoritesFiles((prevFiles) =>
-          prevFiles.filter((file) => !fs.find((f) => f.id === file.id))
-        )
-        break
-    }
+    setDirectories((prevDirs) =>
+      prevDirs.filter((dir) => !dirs.find((d) => d.id === dir.id))
+    )
+    setFiles((prevFiles) =>
+      prevFiles.filter((file) => !fs.find((f) => f.id === file.id))
+    )
   }
 
-  const onContentRename = (content, name, mode) => {
+  const onContentRename = (content, name) => {
     if (content.type === ContentType.DIRECTORY) {
-      switch (mode) {
-        case DriveMode.DRIVE:
-          setDirectories((prevDirs) =>
-            prevDirs.map((dir) => {
-              if (dir.id === content.id)
-                return { ...dir, name, dateModified: new Date() }
-              return dir
-            })
-          )
-          break
-        case DriveMode.FAVORITES:
-          setFavorites((prevDirs) =>
-            prevDirs.map((dir) => {
-              if (dir.id === content.id)
-                return { ...dir, name, dateModified: new Date() }
-              return dir
-            })
-          )
-          break
-      }
+      setDirectories((prevDirs) =>
+        prevDirs.map((dir) => {
+          if (dir.id === content.id)
+            return { ...dir, name, dateModified: new Date() }
+          return dir
+        })
+      )
     } else {
-      switch (mode) {
-        case DriveMode.DRIVE:
-          setFiles((prevFiles) =>
-            prevFiles.map((file) => {
-              if (file.id === content.id)
-                return { ...file, name, dateModified: new Date() }
-              return file
-            })
-          )
-          break
-        case DriveMode.FAVORITES:
-          setFavoritesFiles((prevFiles) =>
-            prevFiles.map((file) => {
-              if (file.id === content.id)
-                return { ...file, name, dateModified: new Date() }
-              return file
-            })
-          )
-          break
-      }
+      setFiles((prevFiles) =>
+        prevFiles.map((file) => {
+          if (file.id === content.id)
+            return { ...file, name, dateModified: new Date() }
+          return file
+        })
+      )
     }
   }
 
-  const onAddRemoveFavorites = (contents, mode) => {
+  const onAddRemoveFavorites = (contents) => {
     const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
     const fs = contents.filter((c) => c.type === ContentType.FILE)
 
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setDirectories((prevDirs) =>
-          prevDirs.map((dir) => {
-            if (dirs.find((d) => d.id === dir.id))
-              return { ...dir, favorite: !dir.favorite }
-            return dir
-          })
-        )
+    setDirectories((prevDirs) =>
+      prevDirs.map((dir) => {
+        if (dirs.find((d) => d.id === dir.id))
+          return { ...dir, favorite: !dir.favorite }
+        return dir
+      })
+    )
 
-        setFiles((prevFiles) =>
-          prevFiles.map((file) => {
-            if (fs.find((f) => f.id === file.id))
-              return { ...file, favorite: !file.favorite }
-            return file
-          })
-        )
-        break
-      case DriveMode.FAVORITES:
-        setFavorites((prevDirs) =>
-          prevDirs.map((dir) => {
-            if (dirs.find((d) => d.id === dir.id))
-              return { ...dir, favorite: !dir.favorite }
-            return dir
-          })
-        )
-
-        setFavoritesFiles((prevFiles) =>
-          prevFiles.map((file) => {
-            if (fs.find((f) => f.id === file.id))
-              return { ...file, favorite: !file.favorite }
-            return file
-          })
-        )
-        break
-    }
+    setFiles((prevFiles) =>
+      prevFiles.map((file) => {
+        if (fs.find((f) => f.id === file.id))
+          return { ...file, favorite: !file.favorite }
+        return file
+      })
+    )
   }
 
-  const clearDirectories = (mode) => {
-    switch (mode) {
-      case DriveMode.DRIVE:
-        setCurrentDirectory(null)
-        setDirectories([])
-        setFiles([])
-        break
-      case DriveMode.FAVORITES:
-        setCurrentFavoritesDirectory(null)
-        setFavorites([])
-        setFavoritesFiles([])
-        break
-      case DriveMode.MOVE:
-        setCurrentMoveDirectory(null)
-        setMoveDirectories([])
-        setMoveFiles([])
-        break
-      case DriveMode.SHARED:
-        setCurrentSharedDirectory(null)
-        setSharedDirectories([])
-        setSharedFiles([])
-        break
-    }
+  const clearDirectories = () => {
+    setDirectories([])
+    setFiles([])
   }
 
   return (
     <DirectoriesContext.Provider
       value={{
-        currentDirectory,
         directories,
         files,
-        currentFavoritesDirectory,
-        favorites,
-        favoritesFiles,
-        currentMoveDirectory,
-        moveDirectories,
-        moveFiles,
-        currentSharedDirectory,
-        sharedDirectories,
-        sharedFiles,
         onDirectoriesLoad,
         onDirectoryAdd,
         onFilesAdd,

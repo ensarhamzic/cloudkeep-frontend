@@ -19,25 +19,16 @@ export const HeaderRight = ({
   moveContentClickHandler,
   deleteContentHandler,
 }) => {
-  const { directories, files, favorites, favoritesFiles } =
-    useContext(DirectoriesContext)
+  const { directories, files } = useContext(DirectoriesContext)
   let canAddToFavorites = true
   let canRemoveFromFavorites = true
 
-  let dirs = []
-  let fs = []
+  let dirs = directories ? [...directories] : []
+  let fs = files ? [...files] : []
 
-  switch (mode) {
-    case DriveMode.DRIVE:
-      dirs = directories ? [...directories] : []
-      fs = files ? [...files] : []
-      break
-    case DriveMode.FAVORITES:
-      dirs = favorites ? [...favorites] : []
-      fs = favoritesFiles ? [...favoritesFiles] : []
-      dirs = dirs.filter((dir) => dir.favorite)
-      fs = fs.filter((file) => file.favorite)
-      break
+  if (mode === DriveMode.FAVORITES) {
+    dirs = dirs.filter((dir) => dir.favorite)
+    fs = fs.filter((file) => file.favorite)
   }
 
   for (let i = 0; i < selectedContent.length; i++) {

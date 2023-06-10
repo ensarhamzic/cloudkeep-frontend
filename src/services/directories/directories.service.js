@@ -2,22 +2,26 @@ import axios from "axios"
 import { API_URL } from "../../../env"
 import { DriveMode } from "../../utils/driveMode"
 
-export const getDirectories = async (token, directoryId, mode) => {
-  console.log("MODE", mode)
-  const queryParameters =
+export const getDirectories = async (token, directoryId, mode, payload) => {
+  let queryParameters =
     `favorite=${mode === DriveMode.FAVORITES}&shared=${
       mode === DriveMode.SHARED
-    }&` + (directoryId !== null ? `directoryId=${directoryId}` : "")
-  console.log(queryParameters)
+    }` + (directoryId !== null ? `&directoryId=${directoryId}` : "")
+  let url = `${API_URL}/directories?${queryParameters}`
+
+  if (mode === DriveMode.SEARCH && !directoryId) {
+    console.log(payload)
+    queryParameters = `query=${payload.query}`
+    url = `${API_URL}/contents/search?${queryParameters}`
+  }
+
   try {
-    const response = await axios.get(
-      `${API_URL}/directories?${queryParameters}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
+    console.log(url)
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     return response.data
   } catch (error) {
     return {

@@ -29,14 +29,13 @@ import { SortBar } from "../components/SortBar.component"
 import { ContentList } from "../components/ContentList"
 import { downloadFile } from "../../../utils/functions"
 import { HeaderRight } from "../components/HeaderRight"
+import { BasicFormInput } from "../../../styles/ui.styles"
+import { Spacer } from "../../../components/Spacer.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const {
+    directories,
     files,
-    currentDirectory,
-    currentFavoritesDirectory,
-    favoritesFiles,
-    currentMoveDirectory,
     onDirectoriesLoad,
     onContentDelete,
     onFilesAdd,
@@ -58,6 +57,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [sortType, setSortType] = useState(SortType.NAME)
   const [sortOrder, setSortOrder] = useState(SortOrder.ASCENDING)
   const [sortMenuOpened, setSortMenuOpened] = useState(false)
+
+  const [searchQuery, setSearchQuery] = useState("")
 
   const [uploadProgress, setUploadProgress] = useState(null)
   const [targetDirectoryId, setTargetDirectoryId] = useState(-1)
@@ -91,22 +92,29 @@ export const DirectoryScreen = ({ route, navigation }) => {
       targetDirectoryId !== directoryId
     )
       return
-    onFilesAdd(uploadedDirectories, mode)
+    onFilesAdd(uploadedDirectories)
     setUploaded(false)
     setTargetDirectoryId(-1)
     setUploadedDirectories([])
   }, [uploaded, targetDirectoryId, directoryId, uploadedDirectoriesLength])
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", async () => {
+    ;(async () => {
+      setDirectoryList([null])
+      if (searchQuery.length < 3 && mode === DriveMode.SEARCH) {
+        clearDirectories()
+        return
+      }
       setIsLoading(true)
-      clearDirectories(mode)
       if (!directoryId) setDirectoryList([null])
-      const data = await getDirectories(token, directoryId, mode)
+      const data = await getDirectories(token, directoryId, mode, {
+        query: searchQuery,
+      })
       let title = "Drive"
       if (mode === DriveMode.FAVORITES) title = "Favorites"
       if (mode === DriveMode.MOVE) title = "Move"
       if (mode === DriveMode.SHARED) title = "Shared"
+      if (mode === DriveMode.SEARCH) title = "Search"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -123,13 +131,48 @@ export const DirectoryScreen = ({ route, navigation }) => {
             />
           ) : null,
       })
-      onDirectoriesLoad(data, mode)
+      onDirectoriesLoad(data)
+      setIsLoading(false)
+    })()
+  }, [searchQuery, directoryId, mode])
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      console.log(mode, searchQuery)
+      clearDirectories()
+      setIsLoading(true)
+      if (!directoryId) setDirectoryList([null])
+      const data = await getDirectories(token, directoryId, mode, {
+        query: searchQuery,
+      })
+      let title = "Drive"
+      if (mode === DriveMode.FAVORITES) title = "Favorites"
+      if (mode === DriveMode.MOVE) title = "Move"
+      if (mode === DriveMode.SHARED) title = "Shared"
+      if (mode === DriveMode.SEARCH) title = "Search"
+      if (data.currentDirectory) title = data.currentDirectory?.name
+      navigation.setOptions({
+        title,
+        headerTitleAlign: "center",
+        headerLeft: () =>
+          (directoryId && <BackButton onBackPress={goBack} />) || null,
+        headerRight: () =>
+          mode === DriveMode.MOVE ? (
+            <AntDesign
+              onPress={cancelMoveHandler}
+              name="close"
+              size={40}
+              color="black"
+            />
+          ) : null,
+      })
+      onDirectoriesLoad(data)
       setIsLoading(false)
     })
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe
-  }, [navigation, mode, directoryId])
+  }, [navigation, mode, directoryId, searchQuery])
 
   useEffect(() => {
     clearDirectories(mode)
@@ -142,18 +185,26 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [directoryId])
 
   const setDefaultHeader = () => {
-    let title = ""
-    switch (mode) {
-      case DriveMode.DRIVE:
-        title = currentDirectory?.name || "Drive"
-        break
-      case DriveMode.FAVORITES:
-        title = currentFavoritesDirectory?.name || "Favorites"
-        break
-      case DriveMode.MOVE:
-        title = currentMoveDirectory?.name || "Move"
-        break
-    }
+    let title = directories?.find((dir) => dir.id === directoryId)?.name
+    if (!title)
+      switch (mode) {
+        case DriveMode.DRIVE:
+          title = "Drive"
+          break
+        case DriveMode.FAVORITES:
+          title = "Favorites"
+          break
+        case DriveMode.MOVE:
+          title = "Move"
+          break
+        case DriveMode.SHARED:
+          title = "Shared"
+          break
+        case DriveMode.SEARCH:
+          title = "Search"
+          break
+      }
+
     navigation.setOptions({
       title,
       headerTitleAlign: "center",
@@ -173,7 +224,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const deleteContentHandler = async () => {
     await deleteContent(token, selectedContent)
-    onContentDelete(selectedContent, mode)
+    onContentDelete(selectedContent)
     setSelectedContent([])
   }
 
@@ -202,7 +253,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const addRemoveFavoritesHandler = async () => {
-    onAddRemoveFavorites(selectedContent, mode)
+    onAddRemoveFavorites(selectedContent)
     const response = await addRemoveFavorites(token, selectedContent)
     if (response.error) return
     setSelectedContent([])
@@ -234,6 +285,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
     let screenName = "Directory"
     if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
     if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
+    if (mode === DriveMode.SEARCH) screenName = "SearchDirectory"
+
     navigation.navigate(screenName, {
       directoryId: directoryList[directoryList.length - 2],
       mode,
@@ -267,13 +320,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
   useEffect(() => {
     ;(async () => {
       if (isLoading || !token || isLoaded) return
+      clearDirectories()
+      if (!directoryId && mode === DriveMode.SEARCH) return
       setIsLoading(true)
-      clearDirectories(mode)
       const data = await getDirectories(token, directoryId, mode)
       let title = "Drive"
       if (mode === DriveMode.FAVORITES) title = "Favorites"
       if (mode === DriveMode.MOVE) title = "Move"
       if (mode === DriveMode.SHARED) title = "Shared"
+      if (mode === DriveMode.SEARCH) title = "Search"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -290,7 +345,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
             />
           ) : null,
       })
-      onDirectoriesLoad(data, mode)
+      onDirectoriesLoad(data)
       setIsLoading(false)
       setIsLoaded(true)
     })()
@@ -318,6 +373,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     let screenName = "Directory"
     if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
     if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
+    if (mode === DriveMode.SEARCH) screenName = "SearchDirectory"
     navigation.navigate(screenName, { directoryId, mode })
   }
 
@@ -328,8 +384,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       return
     }
 
-    let file = files.find((file) => file.id === fileId)
-    if (!file) file = favoritesFiles.find((file) => file.id === fileId)
+    const file = files.find((file) => file.id === fileId)
 
     const fileUrl = await getDownloadURL(ref(storage, file.path))
     // get file extension from url
@@ -452,7 +507,18 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   return (
     <>
-      <ProgressBar progress={uploadProgress} color="blue" />
+      {mode === DriveMode.DRIVE && (
+        <ProgressBar progress={uploadProgress} color="blue" />
+      )}
+      {mode === DriveMode.SEARCH && !directoryId && (
+        <Spacer>
+          <BasicFormInput
+            placeholder="Search query"
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+          />
+        </Spacer>
+      )}
       <SortBar
         sortType={sortType}
         sortOrder={sortOrder}

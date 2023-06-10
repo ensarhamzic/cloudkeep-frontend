@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useContext } from "react"
 import { Text, BackHandler } from "react-native"
 import { Spacer } from "../../components/Spacer.component"
-import { AcceptButton, HeadlineText } from "../../styles/ui.styles"
+import {
+  AcceptButton,
+  BasicFormInput,
+  HeadlineText,
+} from "../../styles/ui.styles"
 import { ErrorText, FormInput } from "../../styles/auth.styles"
 import { ActivityIndicator } from "react-native-paper"
 import { UserList } from "../../components/UserList.component"
@@ -99,11 +103,11 @@ export const ShareScreen = ({ route, navigation }) => {
 
   return (
     <Spacer size="large">
-      <FormInput
+      <BasicFormInput
         placeholder="Search users"
         onChangeText={setUserQuery}
         value={userQuery}
-        label="username"
+        label="Username"
       />
       {error && (
         <Spacer size="medium">

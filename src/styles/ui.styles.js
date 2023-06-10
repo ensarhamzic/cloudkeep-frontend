@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Button, ActivityIndicator } from "react-native-paper"
+import { Button, ActivityIndicator, TextInput } from "react-native-paper"
 
 export const ModalView = styled.View`
   flex: 1;
@@ -168,3 +168,9 @@ export const SortMenuView = styled.View`
   border-radius: 10px;
   background-color: ${(props) => props.theme.colors.white};
 `
+
+export const BasicFormInput = styled(TextInput).attrs((props) => ({
+  contentStyle: {
+    backgroundColor: props.theme.colors.white,
+  },
+}))``

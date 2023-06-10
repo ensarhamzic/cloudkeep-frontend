@@ -1,78 +1,13 @@
-import React, { useCallback } from "react"
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { createStackNavigator } from "@react-navigation/stack"
-import {
-  Entypo,
-  FontAwesome,
-  MaterialIcons,
-  Ionicons,
-} from "@expo/vector-icons"
-import { useTheme } from "styled-components"
-import { DirectoryNavigator } from "./directory.navigator"
-import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
-import { FavoritesNavigator } from "./favorites.navigator"
 import { MoveContentNavigator } from "./moveContent.navigator"
 import { ShareScreen } from "../../features/share/Share.screen"
-import { SharedNavigator } from "./shared.navigator"
-
-const Tab = createBottomTabNavigator()
+import { MainNavigator } from "./main.navigator"
 const Stack = createStackNavigator()
 
-const TAB_ICONS = {
-  Drive: ({ size, color }) => (
-    <Entypo name="onedrive" size={size} color={color} />
-  ),
-  Search: ({ size, color }) => (
-    <FontAwesome name="search" size={size} color={color} />
-  ),
-  Shared: ({ size, color }) => (
-    <FontAwesome name="share-alt" size={size} color={color} />
-  ),
-  Favorites: ({ size, color }) => (
-    <MaterialIcons name="favorite" size={size} color={color} />
-  ),
-  Settings: ({ size, color }) => (
-    <Ionicons name="settings" size={size} color={color} />
-  ),
-}
-
 export const AppNavigator = () => {
-  const theme = useTheme()
-
-  const createScreenOptions = useCallback(
-    ({ route }) => {
-      const TabBarIcon = TAB_ICONS[route.name]
-      return {
-        tabBarIcon: ({ size, color }) => (
-          <TabBarIcon size={size} color={color} />
-        ),
-        tabBarActiveTintColor: theme.colors.brand.primary,
-        tabBarInactiveTintColor: theme.colors.darkGray,
-        headerShown: false,
-      }
-    },
-    [theme]
-  )
-
-  const TabNavigator = () => {
-    return (
-      <Tab.Navigator screenOptions={createScreenOptions} backBehavior="none">
-        <Tab.Screen name="Drive" component={DirectoryNavigator} />
-        <Tab.Screen name="Search" component={DirectoryNavigator} />
-        <Tab.Screen name="Shared" component={SharedNavigator} />
-        <Tab.Screen name="Favorites" component={FavoritesNavigator} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-      </Tab.Navigator>
-    )
-  }
-
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Main" component={TabNavigator} />
+    <Stack.Navigator screenOptions={{ headerShown: false, freezeOnBlur: true }}>
+      <Stack.Screen name="Main" component={MainNavigator} />
       <Stack.Screen name="Move" component={MoveContentNavigator} />
       <Stack.Screen name="Share" component={ShareScreen} />
     </Stack.Navigator>

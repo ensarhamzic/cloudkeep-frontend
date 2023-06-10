@@ -3,4 +3,5 @@ export const DriveMode = {
   FAVORITES: "FAVORITES",
   SHARED: "SHARED",
   MOVE: "MOVE",
+  SEARCH: "SEARCH",
 }

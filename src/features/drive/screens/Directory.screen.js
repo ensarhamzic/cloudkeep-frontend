@@ -18,6 +18,7 @@ import {
   addRemoveFavorites,
   deleteContent,
   moveContent,
+  restoreContents,
 } from "../../../services/contents/contents.service"
 import { RenameContentModal } from "../components/RenameContentModal.component"
 import { DriveMode } from "../../../utils/driveMode"
@@ -41,6 +42,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     onFilesAdd,
     onAddRemoveFavorites,
     clearDirectories,
+    onContentRestore,
   } = useContext(DirectoriesContext)
   const { token } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
@@ -48,6 +50,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [directoryList, setDirectoryList] = useState([null])
   const directoryId = route?.params?.directoryId || null
   const mode = route?.params?.mode || null
+  console.log("MODE", mode)
   const contentToMove = route?.params?.content || []
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
@@ -115,6 +118,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (mode === DriveMode.MOVE) title = "Move"
       if (mode === DriveMode.SHARED) title = "Shared"
       if (mode === DriveMode.SEARCH) title = "Search"
+      if (mode === DriveMode.TRASH) title = "Trash"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -138,7 +142,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      console.log(mode, searchQuery)
       clearDirectories()
       setIsLoading(true)
       if (!directoryId) setDirectoryList([null])
@@ -150,6 +153,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (mode === DriveMode.MOVE) title = "Move"
       if (mode === DriveMode.SHARED) title = "Shared"
       if (mode === DriveMode.SEARCH) title = "Search"
+      if (mode === DriveMode.TRASH) title = "Trash"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -223,7 +227,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const deleteContentHandler = async () => {
-    await deleteContent(token, selectedContent)
+    await deleteContent(token, selectedContent, mode)
     onContentDelete(selectedContent)
     setSelectedContent([])
   }
@@ -265,6 +269,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setUploadProgress((prev) => (prev !== newProgress ? newProgress : prev))
   }
 
+  const restoreContentHandler = async () => {
+    await restoreContents(token, selectedContent)
+    onContentRestore(selectedContent)
+    setSelectedContent([])
+  }
+
   const goBack = () => {
     setUploaded(false)
     if (selectedContent.length > 0) {
@@ -286,6 +296,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
     if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
     if (mode === DriveMode.SEARCH) screenName = "SearchDirectory"
+    if (mode === DriveMode.TRASH) screenName = "Settings"
 
     navigation.navigate(screenName, {
       directoryId: directoryList[directoryList.length - 2],
@@ -306,12 +317,13 @@ export const DirectoryScreen = ({ route, navigation }) => {
       headerRight: () => (
         <HeaderRight
           selectedContent={selectedContent}
-          addRemoveFavoritesHandler={addRemoveFavoritesHandler}
-          renamePressHandler={renamePressHandler}
-          shareContentHandler={shareContentHandler}
+          onAddRemoveFavorite={addRemoveFavoritesHandler}
+          onRenamePress={renamePressHandler}
+          onShareContent={shareContentHandler}
           mode={mode}
-          moveContentClickHandler={moveContentClickHandler}
-          deleteContentHandler={deleteContentHandler}
+          onMoveContentClick={moveContentClickHandler}
+          onDeleteContent={deleteContentHandler}
+          onRestoreContent={restoreContentHandler}
         />
       ),
     })
@@ -329,6 +341,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       if (mode === DriveMode.MOVE) title = "Move"
       if (mode === DriveMode.SHARED) title = "Shared"
       if (mode === DriveMode.SEARCH) title = "Search"
+      if (mode === DriveMode.TRASH) title = "Trash"
       if (data.currentDirectory) title = data.currentDirectory?.name
       navigation.setOptions({
         title,
@@ -357,6 +370,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
       return
     }
+    if (mode === DriveMode.TRASH) return
 
     if (mode === DriveMode.MOVE) {
       navigation.navigate("Move", {
@@ -374,16 +388,16 @@ export const DirectoryScreen = ({ route, navigation }) => {
     if (mode === DriveMode.FAVORITES) screenName = "FavoriteDirectory"
     if (mode === DriveMode.SHARED) screenName = "SharedDirectory"
     if (mode === DriveMode.SEARCH) screenName = "SearchDirectory"
+    if (mode === DriveMode.TRASH) screenName = "Settings"
     navigation.navigate(screenName, { directoryId, mode })
   }
 
   const handleFilePress = async (fileId) => {
-    if (mode === DriveMode.MOVE) return
     if (selectedContent.length > 0) {
       handleContentLongPress({ id: fileId, type: ContentType.FILE })
       return
     }
-
+    if (mode === DriveMode.MOVE || mode === DriveMode.TRASH) return
     const file = files.find((file) => file.id === fileId)
 
     const fileUrl = await getDownloadURL(ref(storage, file.path))

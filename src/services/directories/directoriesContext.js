@@ -74,6 +74,18 @@ export const DirectoriesContextProvider = ({ children }) => {
     )
   }
 
+  const onContentRestore = (contents) => {
+    const dirs = contents.filter((c) => c.type === ContentType.DIRECTORY)
+    const fs = contents.filter((c) => c.type === ContentType.FILE)
+
+    setDirectories((prevDirs) =>
+      prevDirs.filter((dir) => !dirs.find((d) => d.id === dir.id))
+    )
+    setFiles((prevFiles) =>
+      prevFiles.filter((file) => !fs.find((f) => f.id === file.id))
+    )
+  }
+
   const clearDirectories = () => {
     setDirectories([])
     setFiles([])
@@ -91,6 +103,7 @@ export const DirectoriesContextProvider = ({ children }) => {
         onContentDelete,
         onAddRemoveFavorites,
         clearDirectories,
+        onContentRestore,
       }}
     >
       {children}

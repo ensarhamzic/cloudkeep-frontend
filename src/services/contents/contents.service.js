@@ -1,10 +1,15 @@
 import axios from "axios"
 import { API_URL } from "../../../env"
+import { DriveMode } from "../../utils/driveMode"
 
-export const deleteContent = async (token, contents) => {
+export const deleteContent = async (token, contents, mode) => {
   try {
+    let queryParameters = `permanent=${
+      mode === DriveMode.TRASH ? "true" : "false"
+    }`
+    console.log(queryParameters)
     const response = await axios.post(
-      `${API_URL}/contents`,
+      `${API_URL}/contents/delete?${queryParameters}`,
       { contents },
       {
         headers: {
@@ -12,8 +17,10 @@ export const deleteContent = async (token, contents) => {
         },
       }
     )
+    console.log(response.data)
     return response.data
   } catch (error) {
+    console.log("ERROR", error.response.data)
     return {
       error: true,
       ...error.response.data,
@@ -96,6 +103,28 @@ export const getSharedUsers = async (token, content) => {
   try {
     const response = await axios.get(
       `${API_URL}/contents/shared?contentId=${content.id}&contentType=${content.type}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}
+
+export const restoreContents = async (token, contents) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/contents/restore`,
+      {
+        contents,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,

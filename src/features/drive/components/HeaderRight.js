@@ -12,12 +12,13 @@ import { DirectoriesContext } from "../../../services/directories/directoriesCon
 
 export const HeaderRight = ({
   selectedContent,
-  addRemoveFavoritesHandler,
-  renamePressHandler,
-  shareContentHandler,
+  onAddRemoveFavorites,
+  onRenamePress,
+  onShareContent,
   mode,
-  moveContentClickHandler,
-  deleteContentHandler,
+  onMoveContentClick,
+  onDeleteContent,
+  onRestoreContent,
 }) => {
   const { directories, files } = useContext(DirectoriesContext)
   let canAddToFavorites = true
@@ -67,18 +68,18 @@ export const HeaderRight = ({
 
   return (
     <HeaderRightOptionsView>
-      {canAddToFavorites && (
-        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
+      {mode !== DriveMode.TRASH && canAddToFavorites && (
+        <TouchableOpacity onPress={onAddRemoveFavorites}>
           <AntDesign name="star" size={24} color="black" />
         </TouchableOpacity>
       )}
-      {canRemoveFromFavorites && (
-        <TouchableOpacity onPress={addRemoveFavoritesHandler}>
+      {mode !== DriveMode.TRASH && canRemoveFromFavorites && (
+        <TouchableOpacity onPress={onAddRemoveFavorites}>
           <MaterialCommunityIcons name="star-off" size={24} color="black" />
         </TouchableOpacity>
       )}
-      {selectedContent.length === 1 && (
-        <TouchableOpacity onPress={renamePressHandler}>
+      {mode !== DriveMode.TRASH && selectedContent.length === 1 && (
+        <TouchableOpacity onPress={onRenamePress}>
           <MaterialIcons
             name="drive-file-rename-outline"
             size={24}
@@ -86,17 +87,22 @@ export const HeaderRight = ({
           />
         </TouchableOpacity>
       )}
-      {selectedContent.length === 1 && (
-        <TouchableOpacity onPress={shareContentHandler}>
+      {mode !== DriveMode.TRASH && selectedContent.length === 1 && (
+        <TouchableOpacity onPress={onShareContent}>
           <MaterialIcons name="supervisor-account" size={24} color="black" />
         </TouchableOpacity>
       )}
       {mode === DriveMode.DRIVE && (
-        <TouchableOpacity onPress={moveContentClickHandler}>
+        <TouchableOpacity onPress={onMoveContentClick}>
           <MaterialCommunityIcons name="folder-move" size={24} color="black" />
         </TouchableOpacity>
       )}
-      <TouchableOpacity onPress={deleteContentHandler}>
+      {mode === DriveMode.TRASH && (
+        <TouchableOpacity onPress={onRestoreContent}>
+          <MaterialCommunityIcons name="restore" size={24} color="black" />
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity onPress={onDeleteContent}>
         <MaterialIcons name="delete" size={24} color="black" />
       </TouchableOpacity>
     </HeaderRightOptionsView>

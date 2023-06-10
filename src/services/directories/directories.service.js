@@ -10,9 +10,12 @@ export const getDirectories = async (token, directoryId, mode, payload) => {
   let url = `${API_URL}/directories?${queryParameters}`
 
   if (mode === DriveMode.SEARCH && !directoryId) {
-    console.log(payload)
     queryParameters = `query=${payload.query}`
     url = `${API_URL}/contents/search?${queryParameters}`
+  }
+
+  if (mode === DriveMode.TRASH) {
+    url = `${API_URL}/contents/trash`
   }
 
   try {

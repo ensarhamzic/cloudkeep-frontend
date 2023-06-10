@@ -2,6 +2,7 @@ import { createStackNavigator } from "@react-navigation/stack"
 import { MoveContentNavigator } from "./moveContent.navigator"
 import { ShareScreen } from "../../features/share/Share.screen"
 import { MainNavigator } from "./main.navigator"
+import { TrashNavigator } from "./trash.navigator"
 const Stack = createStackNavigator()
 
 export const AppNavigator = () => {
@@ -10,6 +11,7 @@ export const AppNavigator = () => {
       <Stack.Screen name="Main" component={MainNavigator} />
       <Stack.Screen name="Move" component={MoveContentNavigator} />
       <Stack.Screen name="Share" component={ShareScreen} />
+      <Stack.Screen name="Trash" component={TrashNavigator} />
     </Stack.Navigator>
   )
 }

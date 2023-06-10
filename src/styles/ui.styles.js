@@ -67,6 +67,17 @@ export const PrimaryButton = styled(Button).attrs((props) => ({
   align-self: center;
 `
 
+export const SecondaryButton = styled(Button).attrs((props) => ({
+  contentStyle: {
+    flexDirection: "row-reverse",
+    color: props.theme.colors.brand.primary,
+  },
+  mode: "outlined",
+}))`
+  width: 50%;
+  align-self: center;
+`
+
 export const SelectedDirectoryView = styled.View`
   position: absolute;
   z-index: 10;

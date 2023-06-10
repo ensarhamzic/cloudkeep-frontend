@@ -4,4 +4,5 @@ export const DriveMode = {
   SHARED: "SHARED",
   MOVE: "MOVE",
   SEARCH: "SEARCH",
+  TRASH: "TRASH",
 }

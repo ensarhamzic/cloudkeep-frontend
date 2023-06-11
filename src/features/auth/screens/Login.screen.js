@@ -27,6 +27,13 @@ export const LoginScreen = ({ navigation }) => {
           >
             Don't have an account? Sign Up
           </LinkText>
+          <LinkText
+            onPress={() => {
+              navigation.replace("ForgotPassword")
+            }}
+          >
+            Forgot Password?
+          </LinkText>
         </Spacer>
       </AuthScrollView>
     </SafeArea>

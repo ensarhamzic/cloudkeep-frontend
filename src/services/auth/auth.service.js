@@ -59,3 +59,27 @@ export const verifyTokenRequest = async (token) => {
     return { error: true, ...error?.response?.data }
   }
 }
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/forgot-password`, {
+      email,
+    })
+    return response.data
+  } catch (error) {
+    return { error: true, ...error?.response?.data }
+  }
+}
+
+export const resetPassword = async (email, code, password) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/reset-password`, {
+      email,
+      code,
+      password,
+    })
+    return response.data
+  } catch (error) {
+    return { error: true, ...error?.response?.data }
+  }
+}

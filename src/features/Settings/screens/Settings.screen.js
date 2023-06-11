@@ -19,7 +19,6 @@ export const SettingsScreen = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      console.log("focus")
       const data = await getFilesSize(token)
       setDriveData(data)
     })
@@ -34,13 +33,12 @@ export const SettingsScreen = ({ navigation }) => {
 
   const progress =
     Math.round((driveData.size / driveData.storageLimit) * 100) / 100
-  const gbUsed = Math.round((driveData.size / 1000000000) * 100) / 100
   return (
     <>
       <SafeArea>
         <View>
           <Text>Drive space used</Text>
-          <Text>{gbUsed} GB of 1 GB</Text>
+          <Text>{progress} GB of 1 GB</Text>
           <ProgressBar progress={progress} color="#5E72E4" />
         </View>
         <SecondaryButton onPress={trashPressHandler} icon="trash-can-outline">

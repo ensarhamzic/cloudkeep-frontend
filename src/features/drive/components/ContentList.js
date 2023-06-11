@@ -6,6 +6,7 @@ import { ContentType } from "../../../utils/contentType"
 import { DriveMode } from "../../../utils/driveMode"
 import { DirectoriesContext } from "../../../services/directories/directoriesContext"
 import { sortData } from "../../../utils/functions"
+import { EmptyContentText } from "../../../styles/directories.styles"
 
 export const ContentList = ({
   handleDirectoryPress,
@@ -60,7 +61,7 @@ export const ContentList = ({
   const content = [...dirs, ...fs]
   return (
     <>
-      {content.length === 0 && <Text>No content</Text>}
+      {content.length === 0 && <EmptyContentText>No content</EmptyContentText>}
       {content.length > 0 && (
         <FlatList
           data={content}

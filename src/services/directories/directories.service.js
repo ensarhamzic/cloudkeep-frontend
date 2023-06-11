@@ -10,16 +10,21 @@ export const getDirectories = async (token, directoryId, mode, payload) => {
   let url = `${API_URL}/directories?${queryParameters}`
 
   if (mode === DriveMode.SEARCH && !directoryId) {
+    if (!payload.query)
+      return {
+        directories: [],
+        files: [],
+        currentDirectory: null,
+      }
     queryParameters = `query=${payload.query}`
     url = `${API_URL}/contents/search?${queryParameters}`
   }
 
-  if (mode === DriveMode.TRASH) {
-    url = `${API_URL}/contents/trash`
-  }
+  if (mode === DriveMode.TRASH) url = `${API_URL}/contents/trash`
+
+  console.log(url)
 
   try {
-    console.log(url)
     const response = await axios.get(url, {
       headers: {
         Authorization: `Bearer ${token}`,

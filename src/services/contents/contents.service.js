@@ -7,7 +7,6 @@ export const deleteContent = async (token, contents, mode) => {
     const queryParameters = `permanent=${
       mode === DriveMode.TRASH ? "true" : "false"
     }`
-    console.log(queryParameters)
     const response = await axios.post(
       `${API_URL}/contents/delete?${queryParameters}`,
       { contents },
@@ -17,10 +16,8 @@ export const deleteContent = async (token, contents, mode) => {
         },
       }
     )
-    console.log(response.data)
     return response.data
   } catch (error) {
-    console.log("ERROR", error.response.data)
     return {
       error: true,
       ...error.response.data,

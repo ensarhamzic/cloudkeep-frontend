@@ -5,6 +5,8 @@ import { storage } from "../../../config"
 import uuid from "react-native-uuid"
 import { FileType } from "../../utils/fileType"
 
+const MB20 = 20971520 // 20MB in bytes
+
 const getFileType = ({ uri }) => {
   const uriParts = uri.split(".")
   const type = uriParts[uriParts.length - 1].toLowerCase()
@@ -63,13 +65,10 @@ const getFileType = ({ uri }) => {
 export const uploadFiles = async (token, files, directoryId, handler) => {
   return new Promise(async (resolve, reject) => {
     const uploadedFiles = []
+    const blobs = []
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
-      const uriParts = file.uri.split(".")
-      const extension = uriParts[uriParts.length - 1].toLowerCase()
-      const filePath = uuid.v4() + "." + extension
-      const storageRef = ref(storage, filePath)
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest()
         xhr.onload = function () {
@@ -84,6 +83,29 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
         xhr.open("GET", file.uri, true)
         xhr.send()
       })
+      // if blob.size > 20mb reject
+      if (!blob || blob.size > MB20) {
+        reject(new Error("File too large"))
+        return
+      }
+      blobs.push(blob)
+    }
+
+    const filesData = await getFilesSize(token)
+    const totalSize =
+      filesData.size + blobs.reduce((acc, blob) => acc + blob.size, 0)
+    if (totalSize > filesData.storageLimit) {
+      reject(new Error("Not enough storage space"))
+      return
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const blob = blobs[i]
+      const uriParts = file.uri.split(".")
+      const extension = uriParts[uriParts.length - 1].toLowerCase()
+      const filePath = uuid.v4() + "." + extension
+      const storageRef = ref(storage, filePath)
 
       await new Promise((resolve, reject) => {
         const uploadTask = uploadBytesResumable(storageRef, blob)
@@ -125,11 +147,12 @@ export const uploadFiles = async (token, files, directoryId, handler) => {
       })
       resolve(response.data)
     } catch (error) {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject({
-        error: true,
-        ...error.response.data,
-      })
+      reject(
+        new Error({
+          error: true,
+          ...error.response.data,
+        })
+      )
     }
   })
 }

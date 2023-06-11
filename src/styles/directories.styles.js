@@ -68,3 +68,9 @@ export const MoveButton = styled(Button).attrs((props) => ({
   align-items: center;
   justify-content: center;
 `
+
+export const EmptyContentText = styled.Text`
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+`

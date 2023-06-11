@@ -32,8 +32,11 @@ import { downloadFile } from "../../../utils/functions"
 import { HeaderRight } from "../components/HeaderRight"
 import { BasicFormInput } from "../../../styles/ui.styles"
 import { Spacer } from "../../../components/Spacer.component"
+import Toast from "react-native-root-toast"
+import { useTheme } from "styled-components"
 
 export const DirectoryScreen = ({ route, navigation }) => {
+  const theme = useTheme()
   const {
     directories,
     files,
@@ -50,7 +53,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [directoryList, setDirectoryList] = useState([null])
   const directoryId = route?.params?.directoryId || null
   const mode = route?.params?.mode || null
-  console.log("MODE", mode)
   const contentToMove = route?.params?.content || []
 
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
@@ -416,7 +418,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }, [goBack])
 
   const loadingContent = (
-    <ActivityIndicator animating color="#000" size="large" />
+    <Spacer size="large">
+      <ActivityIndicator animating color={theme.colors.primary} size="large" />
+    </Spacer>
   )
 
   const newDirClickHandler = () => {
@@ -444,20 +448,22 @@ export const DirectoryScreen = ({ route, navigation }) => {
       allowsMultipleSelection: true,
     })
 
-    console.log(result)
-
     if (result.canceled) return
 
-    const response = await uploadFiles(
-      token,
-      result.assets,
-      directoryId,
-      handleProgressChange
-    )
-    setTargetDirectoryId(directoryId)
-    setUploadedDirectories(response.data)
-    setUploaded(true)
-    setUploadProgress(null)
+    try {
+      const response = await uploadFiles(
+        token,
+        result.assets,
+        directoryId,
+        handleProgressChange
+      )
+      setTargetDirectoryId(directoryId)
+      setUploadedDirectories(response.data)
+      setUploaded(true)
+      setUploadProgress(null)
+    } catch (error) {
+      Toast.show(error.message, Toast.durations.LONG)
+    }
   }
 
   const uploadFileHandler = async () => {
@@ -475,20 +481,22 @@ export const DirectoryScreen = ({ route, navigation }) => {
       multiple: true,
     })
 
-    console.log(file)
-
     if (file.type === "cancel") return
 
-    const response = await uploadFiles(
-      token,
-      [file],
-      directoryId,
-      handleProgressChange
-    )
-    setTargetDirectoryId(directoryId)
-    setUploadedDirectories(response.data)
-    setUploaded(true)
-    setUploadProgress(null)
+    try {
+      const response = await uploadFiles(
+        token,
+        [file],
+        directoryId,
+        handleProgressChange
+      )
+      setTargetDirectoryId(directoryId)
+      setUploadedDirectories(response.data)
+      setUploaded(true)
+      setUploadProgress(null)
+    } catch (error) {
+      Toast.show(error.message, Toast.durations.LONG)
+    }
   }
 
   const handleContentLongPress = (content) => {

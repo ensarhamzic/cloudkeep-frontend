@@ -34,6 +34,7 @@ import { BasicFormInput } from "../../../styles/ui.styles"
 import { Spacer } from "../../../components/Spacer.component"
 import Toast from "react-native-root-toast"
 import { useTheme } from "styled-components"
+import { DeleteContentModal } from "../components/DeleteContentModal.component"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const theme = useTheme()
@@ -58,6 +59,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   const [floatingMenuOpened, setFloatingMenuOpened] = useState(false)
   const [newDirModalOpened, setNewDirModalOpened] = useState(false)
   const [renameModalOpened, setRenameModalOpened] = useState(false)
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false)
 
   const [sortType, setSortType] = useState(SortType.NAME)
   const [sortOrder, setSortOrder] = useState(SortOrder.ASCENDING)
@@ -230,9 +232,14 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const deleteContentHandler = async () => {
+    setDeleteModalOpened(false)
+    setSelectedContent([])
     await deleteContent(token, selectedContent, mode)
     onContentDelete(selectedContent)
-    setSelectedContent([])
+  }
+
+  const deleteContentPressHandler = () => {
+    setDeleteModalOpened(true)
   }
 
   const renamePressHandler = () => {
@@ -325,7 +332,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
           onShareContent={shareContentHandler}
           mode={mode}
           onMoveContentClick={moveContentClickHandler}
-          onDeleteContent={deleteContentHandler}
+          onDeleteContent={deleteContentPressHandler}
           onRestoreContent={restoreContentHandler}
         />
       ),
@@ -571,6 +578,11 @@ export const DirectoryScreen = ({ route, navigation }) => {
           setSelectedContent([])
         }}
         mode={mode}
+      />
+      <DeleteContentModal
+        opened={deleteModalOpened}
+        onClose={() => setDeleteModalOpened(false)}
+        onDelete={deleteContentHandler}
       />
       {isLoading && loadingContent}
       {!isLoading && (

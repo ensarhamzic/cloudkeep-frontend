@@ -141,7 +141,7 @@ export const RegisterForm = () => {
       </Spacer>
       <Spacer position="top" size="medium">
         <FormInput
-          secureTextEntry={true}
+          secureTextEntry
           label="Password"
           onChangeText={setPassword}
           value={password}
@@ -152,7 +152,7 @@ export const RegisterForm = () => {
       </Spacer>
       <Spacer position="top" size="medium">
         <FormInput
-          secureTextEntry={true}
+          secureTextEntry
           label="Confirm Password"
           onChangeText={setConfirmPassword}
           value={confirmPassword}

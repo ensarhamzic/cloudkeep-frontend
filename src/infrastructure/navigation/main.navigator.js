@@ -1,11 +1,6 @@
 import React, { useCallback } from "react"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import {
-  Entypo,
-  FontAwesome,
-  MaterialIcons,
-  Ionicons,
-} from "@expo/vector-icons"
+import { Entypo, FontAwesome, MaterialIcons, Feather } from "@expo/vector-icons"
 import { useTheme } from "styled-components"
 import { DirectoryNavigator } from "./directory.navigator"
 import { SettingsScreen } from "../../features/settings/screens/Settings.screen"
@@ -29,7 +24,7 @@ const TAB_ICONS = {
     <MaterialIcons name="favorite" size={size} color={color} />
   ),
   Settings: ({ size, color }) => (
-    <Ionicons name="settings" size={size} color={color} />
+    <Feather name="more-horizontal" size={size} color={color} />
   ),
 }
 
@@ -58,7 +53,11 @@ export const MainNavigator = () => {
       <Tab.Screen name="Search" component={SearchNavigator} />
       <Tab.Screen name="Shared" component={SharedNavigator} />
       <Tab.Screen name="Favorites" component={FavoritesNavigator} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen
+        name="Settings"
+        options={{ tabBarLabel: "More" }}
+        component={SettingsScreen}
+      />
     </Tab.Navigator>
   )
 }

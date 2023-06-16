@@ -22,8 +22,6 @@ export const getDirectories = async (token, directoryId, mode, payload) => {
 
   if (mode === DriveMode.TRASH) url = `${API_URL}/contents/trash`
 
-  console.log(url)
-
   try {
     const response = await axios.get(url, {
       headers: {

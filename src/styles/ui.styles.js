@@ -185,3 +185,10 @@ export const BasicFormInput = styled(TextInput).attrs((props) => ({
     backgroundColor: props.theme.colors.white,
   },
 }))``
+
+export const DriveSpaceView = styled.View`
+  padding: 10px 30px 10px 30px;
+  margin: 10px;
+  border: 1px solid ${(props) => props.theme.colors.darkGray};
+  border-radius: 10px;
+`

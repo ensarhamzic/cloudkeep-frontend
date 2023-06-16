@@ -5,6 +5,9 @@ import { Platform } from "react-native"
 import { SortOrder } from "./sortOrder"
 import { SortType } from "./sortType"
 
+import { ref, getDownloadURL } from "firebase/storage"
+import { storage } from "../../config"
+
 export const downloadFile = async (fileUrl, destinationPath) => {
   try {
     // eslint-disable-next-line import/namespace
@@ -47,3 +50,6 @@ export const sortData = (data, sortType, sortOrder) => {
       : data.sort((a, b) => b.dateModified - a.dateModified)
   return data
 }
+
+export const getProfilePictureUrl = async (path) =>
+  await getDownloadURL(ref(storage, path))

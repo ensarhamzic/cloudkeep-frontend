@@ -105,6 +105,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     ;(async () => {
+      if (!token) return
       setDirectoryList([null])
       if (searchQuery.length < 3 && mode === DriveMode.SEARCH) {
         clearDirectories()
@@ -140,7 +141,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       onDirectoriesLoad(data)
       setIsLoading(false)
     })()
-  }, [searchQuery, directoryId, mode])
+  }, [token, searchQuery, directoryId, mode])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -178,7 +179,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe
-  }, [navigation, mode, directoryId, searchQuery])
+  }, [token, navigation, mode, directoryId, searchQuery])
 
   useEffect(() => {
     clearDirectories(mode)

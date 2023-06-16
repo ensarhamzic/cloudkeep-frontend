@@ -1,19 +1,27 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   ProfilePictureView,
   UserCardTouchableOpacity,
+  ProfilePictureImage,
 } from "../styles/ui.styles"
 import { Text } from "react-native"
 import profilePicture from "../../assets/user-default-picture.png"
-import { ProfilePictureImage } from "../styles/ui.styles"
+import { getProfilePictureUrl } from "../utils/functions"
 
 export const UserCard = ({ user, onPress }) => {
-  let ProfilePicture = <ProfilePictureImage source={profilePicture} />
-  if (user.profilePicture) {
-    ProfilePicture = (
-      <ProfilePictureImage source={{ uri: user.profilePicture }} />
-    )
-  }
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null)
+
+  useEffect(() => {
+    ;(async () => {
+      if (user.profilePicture) {
+        const url = await getProfilePictureUrl(user.profilePicture)
+        setProfilePictureUrl(url)
+      }
+    })()
+  }, [user])
+
+  const source = profilePictureUrl ? { uri: profilePictureUrl } : profilePicture
+  const ProfilePicture = <ProfilePictureImage source={source} />
 
   const userPressHandler = () => {
     onPress(user)

@@ -1,6 +1,6 @@
 import axios from "axios"
 import { API_URL } from "../../../env"
-import { ref, uploadBytesResumable } from "firebase/storage"
+import { ref, uploadBytes, uploadBytesResumable } from "firebase/storage"
 import { storage } from "../../../config"
 import uuid from "react-native-uuid"
 import { FileType } from "../../utils/fileType"
@@ -171,4 +171,28 @@ export const getFilesSize = async (token) => {
       ...error.response.data,
     }
   }
+}
+
+export const uploadProfilePicture = async (uri) => {
+  const blob = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.onload = function () {
+      resolve(xhr.response)
+    }
+
+    xhr.onerror = function () {
+      reject(new TypeError("Network request failed"))
+    }
+
+    xhr.responseType = "blob"
+    xhr.open("GET", uri, true)
+    xhr.send()
+  })
+  const uriParts = uri.split(".")
+  const extension = uriParts[uriParts.length - 1].toLowerCase()
+  const filePath = uuid.v4() + "." + extension
+  const storageRef = ref(storage, filePath)
+
+  const uploadResult = await uploadBytes(storageRef, blob)
+  return uploadResult.metadata.fullPath
 }

@@ -192,3 +192,16 @@ export const DriveSpaceView = styled.View`
   border: 1px solid ${(props) => props.theme.colors.darkGray};
   border-radius: 10px;
 `
+
+export const UpdateProfilePictureView = styled.View`
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 10px;
+`
+
+export const UpdateProfilePictureImage = styled.Image`
+  width: 100px;
+  height: 100px;
+  border-radius: 100px;
+`

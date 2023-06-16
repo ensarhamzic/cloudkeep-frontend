@@ -9,6 +9,7 @@ export const loginRequest = async (username, password) => {
     })
     return response.data
   } catch (error) {
+    console.log(error.response.data)
     return {
       error: true,
       ...error.response.data,
@@ -19,6 +20,27 @@ export const loginRequest = async (username, password) => {
 export const registerRequest = async (user) => {
   try {
     const response = await axios.post(`${API_URL}/auth/register`, user)
+    return response.data
+  } catch (error) {
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}
+
+export const updateUserRequest = async (token, user) => {
+  console.log(user)
+  try {
+    if (user.password === "") {
+      user.password = null
+      user.confirmPassword = null
+    }
+    const response = await axios.put(`${API_URL}/users`, user, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
     return response.data
   } catch (error) {
     return {

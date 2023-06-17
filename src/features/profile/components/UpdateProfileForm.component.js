@@ -25,8 +25,6 @@ export const UpdateProfileForm = () => {
   const [firstNameError, setFirstNameError] = useState(null)
   const [lastName, setLastName] = useState("")
   const [lastNameError, setLastNameError] = useState(null)
-  const [email, setEmail] = useState("")
-  const [emailError, setEmailError] = useState(null)
   const [username, setUsername] = useState("")
   const [usernameError, setUsernameError] = useState(null)
   const [profilePicture, setProfilePicture] = useState(null)
@@ -42,11 +40,14 @@ export const UpdateProfileForm = () => {
 
   useEffect(() => {
     ;(async () => {
-      if (user.profilePicture)
-        setProfilePictureUrl(await getProfilePictureUrl(user.profilePicture))
+      if (user.profilePicture) {
+        let url = user.profilePicture
+        if (!url.startsWith("https://"))
+          url = await getProfilePictureUrl(user.profilePicture)
+        setProfilePictureUrl(url)
+      }
       setFirstName(user.firstName)
       setLastName(user.lastName)
-      setEmail(user.email)
       setUsername(user.username)
     })()
   }, [])
@@ -65,11 +66,6 @@ export const UpdateProfileForm = () => {
     else if (lastName.length < 2)
       setLastNameError("Must be at least 2 characters long")
     else setLastNameError(null)
-
-    if (!email) setEmailError("Email is required")
-    else if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
-      setEmailError("Must be a valid email address")
-    else setEmailError(null)
 
     if (!username) setUsernameError("Username is required")
     else if (username.length < 5)
@@ -92,7 +88,6 @@ export const UpdateProfileForm = () => {
         formSubmitted &&
         !firstNameError &&
         !lastNameError &&
-        !emailError &&
         !usernameError &&
         !passwordError &&
         !confirmPasswordError
@@ -102,7 +97,6 @@ export const UpdateProfileForm = () => {
         const user = {
           firstName,
           lastName,
-          email,
           username,
           profilePicture,
           password,
@@ -140,8 +134,8 @@ export const UpdateProfileForm = () => {
       Permissions.MEDIA_LIBRARY
     )
     if (permissionStatus !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!")
-      return
+      // alert("Sorry, we need camera roll permissions to make this work!")
+      // return
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -188,16 +182,6 @@ export const UpdateProfileForm = () => {
           <InputError error={lastNameError} />
         </Spacer>
 
-        <Spacer position="top" size="medium">
-          <FormInput
-            label="Email"
-            onChangeText={setEmail}
-            value={email}
-            error={emailError}
-            disabled={isLoading}
-          />
-          <InputError error={emailError} />
-        </Spacer>
         <Spacer position="top" size="medium">
           <FormInput
             label="Username"

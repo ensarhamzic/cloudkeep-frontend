@@ -29,6 +29,27 @@ export const registerRequest = async (user) => {
   }
 }
 
+export const registerGoogleRequest = async (googleData) => {
+  const user = {
+    firstName: googleData.given_name,
+    lastName: googleData.family_name,
+    username: googleData.name.replace(/\s/g, ""),
+    email: googleData.email,
+    profilePicture: googleData.picture,
+  }
+  try {
+    const response = await axios.post(`${API_URL}/auth/google`, user)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    console.log(error.response.data)
+    return {
+      error: true,
+      ...error.response.data,
+    }
+  }
+}
+
 export const updateUserRequest = async (token, user) => {
   console.log(user)
   try {

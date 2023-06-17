@@ -14,7 +14,9 @@ export const UserCard = ({ user, onPress }) => {
   useEffect(() => {
     ;(async () => {
       if (user.profilePicture) {
-        const url = await getProfilePictureUrl(user.profilePicture)
+        let url = user.profilePicture
+        if (!url.startsWith("https://"))
+          url = await getProfilePictureUrl(user.profilePicture)
         setProfilePictureUrl(url)
       }
     })()

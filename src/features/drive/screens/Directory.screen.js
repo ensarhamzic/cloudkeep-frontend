@@ -447,8 +447,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
       Permissions.MEDIA_LIBRARY
     )
     if (permissionStatus !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!")
-      return
+      // alert("Sorry, we need camera roll permissions to make this work!")
+      // return
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -481,8 +481,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
       Permissions.MEDIA_LIBRARY
     )
     if (permissionStatus !== "granted") {
-      alert("Sorry, we need camera roll permissions to make this work!")
-      return
+      // alert("Sorry, we need camera roll permissions to make this work!")
+      // return
     }
     const file = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,

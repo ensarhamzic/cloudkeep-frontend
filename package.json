@@ -48,7 +48,8 @@
     "expo-auth-session": "~4.0.3",
     "expo-crypto": "~12.2.1",
     "expo-web-browser": "~12.1.1",
-    "expo-network": "~5.2.1"
+    "expo-network": "~5.2.1",
+    "@react-native-community/netinfo": "9.3.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

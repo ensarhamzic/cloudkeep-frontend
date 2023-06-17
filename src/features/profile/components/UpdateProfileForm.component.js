@@ -13,7 +13,6 @@ import {
 } from "../../../styles/ui.styles"
 import { Text, TouchableOpacity } from "react-native"
 import { getProfilePictureUrl } from "../../../utils/functions"
-import * as Permissions from "expo-permissions"
 import * as ImagePicker from "expo-image-picker"
 import { uploadProfilePicture } from "../../../services/files/files.service"
 
@@ -129,15 +128,6 @@ export const UpdateProfileForm = () => {
   }, [notVerified])
 
   const changeProfilePictureHandler = async () => {
-    const { status: permissionStatus } = await Permissions.askAsync(
-      Permissions.CAMERA,
-      Permissions.MEDIA_LIBRARY
-    )
-    if (permissionStatus !== "granted") {
-      // alert("Sorry, we need camera roll permissions to make this work!")
-      // return
-    }
-
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,

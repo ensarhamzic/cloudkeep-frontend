@@ -6,9 +6,24 @@ import { AuthContextProvider } from "./src/services/auth/authContext"
 import { DirectoriesContextProvider } from "./src/services/directories/directoriesContext"
 import { enableFreeze } from "react-native-screens"
 import { RootSiblingParent } from "react-native-root-siblings"
+import NetInfo from "@react-native-community/netinfo"
 enableFreeze(true)
 
 export default function App() {
+  const [isConnected, setIsConnected] = useState(true)
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected)
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
+  console.log("isConnected", isConnected)
+
   return (
     <RootSiblingParent>
       <ThemeProvider theme={theme}>

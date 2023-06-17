@@ -23,7 +23,6 @@ import {
 import { RenameContentModal } from "../components/RenameContentModal.component"
 import { DriveMode } from "../../../utils/driveMode"
 import { MoveButton } from "../../../styles/directories.styles"
-import * as Permissions from "expo-permissions"
 import { SortType } from "../../../utils/sortType"
 import { SortOrder } from "../../../utils/sortOrder"
 import { SortBar } from "../components/SortBar.component"
@@ -442,14 +441,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadMediaHandler = async () => {
     setFloatingMenuOpened(false)
-    const { status: permissionStatus } = await Permissions.askAsync(
-      Permissions.CAMERA,
-      Permissions.MEDIA_LIBRARY
-    )
-    if (permissionStatus !== "granted") {
-      // alert("Sorry, we need camera roll permissions to make this work!")
-      // return
-    }
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -476,14 +467,6 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   const uploadFileHandler = async () => {
     setFloatingMenuOpened(false)
-    const { status: permissionStatus } = await Permissions.askAsync(
-      Permissions.CAMERA,
-      Permissions.MEDIA_LIBRARY
-    )
-    if (permissionStatus !== "granted") {
-      // alert("Sorry, we need camera roll permissions to make this work!")
-      // return
-    }
     const file = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: true,
       multiple: true,

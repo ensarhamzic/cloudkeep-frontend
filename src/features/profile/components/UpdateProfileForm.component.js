@@ -192,18 +192,20 @@ export const UpdateProfileForm = () => {
           />
           <InputError error={usernameError} />
         </Spacer>
-        <Spacer position="top" size="medium">
-          <FormInput
-            secureTextEntry
-            label="New Password (optional)"
-            onChangeText={setPassword}
-            value={password}
-            error={passwordError}
-            disabled={isLoading}
-          />
-          <InputError error={passwordError} />
-        </Spacer>
-        {password.length > 0 && (
+        {!user.google && (
+          <Spacer position="top" size="medium">
+            <FormInput
+              secureTextEntry
+              label="New Password (optional)"
+              onChangeText={setPassword}
+              value={password}
+              error={passwordError}
+              disabled={isLoading}
+            />
+            <InputError error={passwordError} />
+          </Spacer>
+        )}
+        {!user.google && password.length > 0 && (
           <Spacer position="top" size="medium">
             <FormInput
               secureTextEntry

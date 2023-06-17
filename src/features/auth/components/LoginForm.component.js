@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
 import { Spacer } from "../../../components/Spacer.component"
-import { FormInput, FormView, AuthButton } from "../../../styles/auth.styles"
+import {
+  FormInput,
+  FormView,
+  AuthButton,
+  AuthButtonSecondary,
+} from "../../../styles/auth.styles"
 import {
   loginRequest,
   registerGoogleRequest,
@@ -113,9 +118,14 @@ export const LoginForm = () => {
         </AuthButton>
       </Spacer>
       <Spacer position="top" size="large">
-        <AuthButton mode="contained" onPress={() => promptAsync()}>
-          Sign in with Google
-        </AuthButton>
+        <AuthButtonSecondary
+          mode="outlined"
+          icon="google"
+          onPress={() => promptAsync()}
+        >
+          {" "}
+          Sign with Google
+        </AuthButtonSecondary>
       </Spacer>
       <InputError error={loginError} />
     </FormView>

@@ -33,6 +33,14 @@ export const AuthButton = styled(Button).attrs((props) => ({
   },
 }))``
 
+export const AuthButtonSecondary = styled(Button).attrs((props) => ({
+  contentStyle: {
+    flexDirection: "row-reverse",
+    backgroundColor: props.theme.colors.white,
+    border: `1px solid ${props.theme.colors.brand.primary}`,
+  },
+}))``
+
 export const AuthHeadline = styled.Text`
   font-size: 15px;
   font-weight: bold;

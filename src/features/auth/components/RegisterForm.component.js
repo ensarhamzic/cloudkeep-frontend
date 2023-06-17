@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useContext } from "react"
 import { AuthContext } from "../../../services/auth/authContext"
-import { FormInput, FormView, AuthButton } from "../../../styles/auth.styles"
+import {
+  FormInput,
+  FormView,
+  AuthButton,
+  AuthButtonSecondary,
+} from "../../../styles/auth.styles"
 import { Spacer } from "../../../components/Spacer.component"
 import { InputError } from "../../../components/InputError.component"
-import { registerRequest } from "../../../services/auth/auth.service"
+import {
+  registerRequest,
+  registerGoogleRequest,
+} from "../../../services/auth/auth.service"
 import { useNavigation } from "@react-navigation/native"
+import * as WebBrowser from "expo-web-browser"
+// eslint-disable-next-line import/namespace
+import * as Google from "expo-auth-session/providers/google"
+import { ANDROID_GOOGLE_CLIENT_ID, IOS_GOOGLE_CLIENT_ID } from "../../../../env"
 
 export const RegisterForm = () => {
   const { onAuth, user } = useContext(AuthContext)
@@ -60,6 +72,27 @@ export const RegisterForm = () => {
       setConfirmPasswordError("Passwords must match")
     else setConfirmPasswordError(null)
   }
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: IOS_GOOGLE_CLIENT_ID,
+    androidClientId: ANDROID_GOOGLE_CLIENT_ID,
+  })
+
+  useEffect(() => {
+    ;(async () => {
+      if (response?.type === "success") {
+        const accessToken = response?.authentication?.accessToken
+        if (!accessToken) return
+        const rsp = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        const userInfo = await rsp.json()
+        const r = await registerGoogleRequest(userInfo)
+        if (r.error) setRegisterError(r.message)
+        else await onAuth(r)
+      }
+    })()
+  }, [response])
 
   useEffect(() => {
     ;(async () => {
@@ -168,6 +201,15 @@ export const RegisterForm = () => {
         >
           {isLoading ? "Signing you up..." : "Register"}
         </AuthButton>
+      </Spacer>
+      <Spacer position="top" size="large">
+        <AuthButtonSecondary
+          mode="outlined"
+          icon="google"
+          onPress={() => promptAsync()}
+        >
+          Sign with Google
+        </AuthButtonSecondary>
       </Spacer>
       <InputError error={registerError} />
     </FormView>

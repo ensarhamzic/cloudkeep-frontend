@@ -6,7 +6,7 @@ import { InputError } from "../../../components/InputError.component"
 import { updateUserRequest } from "../../../services/auth/auth.service"
 import { useNavigation } from "@react-navigation/native"
 import Toast from "react-native-root-toast"
-import profilePicture from "../../../../assets/user-default-picture.png"
+import defaultPicture from "../../../../assets/user-default-picture.png"
 import {
   UpdateProfilePictureImage,
   UpdateProfilePictureView,
@@ -52,7 +52,7 @@ export const UpdateProfileForm = () => {
     })()
   }, [])
 
-  const source = profilePictureUrl ? { uri: profilePictureUrl } : profilePicture
+  const source = profilePictureUrl ? { uri: profilePictureUrl } : defaultPicture
 
   const registerHandler = () => {
     setFormSubmitted(true)

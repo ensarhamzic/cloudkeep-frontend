@@ -416,8 +416,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
     setLoadingFileId(fileId)
     const file = files.find((file) => file.id === fileId)
     const fileUrl = await getDownloadURL(ref(storage, file.path))
-    // get file extension from url
-    const fileExtension = fileUrl.split(".").pop()
+    // get file extension from url, removing query params
+    const fileExtension = fileUrl
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .split(/#|\?/)[0]
     await downloadFile(fileUrl, file.name + "." + fileExtension)
     setLoadingFileId(null)
   }

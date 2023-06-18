@@ -9,6 +9,8 @@ import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../config"
 
 export const downloadFile = async (fileUrl, destinationPath) => {
+  console.log("FILEURL", fileUrl)
+  console.log("DESTINATIONPATH", destinationPath)
   try {
     // eslint-disable-next-line import/namespace
     let filePath = FileSystem.cacheDirectory + destinationPath
@@ -20,23 +22,29 @@ export const downloadFile = async (fileUrl, destinationPath) => {
     // Linking.openURL(newUri)
     if (Platform.OS === "android") {
       try {
-        console.log("TU SMO OPET")
         // eslint-disable-next-line import/namespace
         const cUri = await FileSystem.getContentUriAsync(result.uri)
-        await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+        IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: cUri,
           flags: 1,
         })
-        console.log("ENSAR")
-      } catch {
-        console.log("TU SMO OPET222")
+          .then((res) => {
+            console.log("Opened", res)
+          })
+          .catch((err) => {
+            console.log("Error opening", err)
+          })
+      } catch (error) {
+        console.log(error)
+        console.log("Nije pokrenuto")
         shareAsync(result.uri)
       }
     } else {
+      console.log("Pokrenuto2")
       shareAsync(result.uri)
     }
   } catch {
-    console.log("TU SMO OPET333")
+    console.log("Nije uspelo")
   }
 }
 

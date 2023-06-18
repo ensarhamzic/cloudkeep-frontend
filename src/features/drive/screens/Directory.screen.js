@@ -27,7 +27,7 @@ import { SortType } from "../../../utils/sortType"
 import { SortOrder } from "../../../utils/sortOrder"
 import { SortBar } from "../components/SortBar.component"
 import { ContentList } from "../components/ContentList"
-import { downloadFile } from "../../../utils/functions"
+import { downloadFile, shareFile } from "../../../utils/functions"
 import { HeaderRight } from "../components/HeaderRight"
 import { BasicFormInput } from "../../../styles/ui.styles"
 import { Spacer } from "../../../components/Spacer.component"
@@ -338,6 +338,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
           onMoveContentClick={moveContentClickHandler}
           onDeleteContent={deleteContentPressHandler}
           onRestoreContent={restoreContentHandler}
+          onFileShare={fileShareHandler}
         />
       ),
     })
@@ -422,9 +423,21 @@ export const DirectoryScreen = ({ route, navigation }) => {
       .split(".")
       .pop()
       .split(/#|\?/)[0]
-    await downloadFile(fileUrl, file.name + "." + fileExtension)
+    await downloadFile(fileUrl, file.name + "." + fileExtension, file.fileType)
     setLoadingFileId(null)
   }
+
+  const fileShareHandler = async () => {
+    const file = files.find((file) => file.id === selectedContent[0].id)
+    const fileUrl = await getDownloadURL(ref(storage, file.path))
+    const fileExtension = fileUrl
+      .split("?")[0]
+      .split(".")
+      .pop()
+      .split(/#|\?/)[0]
+    await shareFile(fileUrl, file.name + "." + fileExtension)
+  }
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",

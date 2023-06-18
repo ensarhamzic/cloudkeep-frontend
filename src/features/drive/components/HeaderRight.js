@@ -5,6 +5,7 @@ import {
   AntDesign,
   MaterialCommunityIcons,
   MaterialIcons,
+  FontAwesome,
 } from "@expo/vector-icons"
 import { DriveMode } from "../../../utils/driveMode"
 import { ContentType } from "../../../utils/contentType"
@@ -19,6 +20,7 @@ export const HeaderRight = ({
   onMoveContentClick,
   onDeleteContent,
   onRestoreContent,
+  onFileShare,
 }) => {
   const { directories, files } = useContext(DirectoriesContext)
   let canAddToFavorites = true
@@ -68,6 +70,14 @@ export const HeaderRight = ({
 
   return (
     <HeaderRightOptionsView>
+      {selectedContent.length === 1 &&
+        selectedContent[0].type === ContentType.FILE &&
+        mode !== DriveMode.TRASH &&
+        mode !== DriveMode.MOVE && (
+          <TouchableOpacity onPress={onFileShare}>
+            <FontAwesome name="share-alt" size={24} color="black" />
+          </TouchableOpacity>
+        )}
       {mode !== DriveMode.TRASH && canAddToFavorites && (
         <TouchableOpacity onPress={onAddRemoveFavorites}>
           <AntDesign name="star" size={24} color="black" />

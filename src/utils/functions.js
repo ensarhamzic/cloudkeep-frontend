@@ -9,8 +9,6 @@ import { ref, getDownloadURL } from "firebase/storage"
 import { storage } from "../../config"
 
 export const downloadFile = async (fileUrl, destinationPath) => {
-  console.log("FILEURL", fileUrl)
-  console.log("DESTINATIONPATH", destinationPath)
   try {
     // eslint-disable-next-line import/namespace
     let filePath = FileSystem.cacheDirectory + destinationPath
@@ -18,12 +16,14 @@ export const downloadFile = async (fileUrl, destinationPath) => {
     filePath = filePath.replace(/\s/g, "")
     // eslint-disable-next-line import/namespace
     const result = await FileSystem.downloadAsync(fileUrl, filePath)
+    // console.log(result)
 
     // Linking.openURL(newUri)
     if (Platform.OS === "android") {
       try {
         // eslint-disable-next-line import/namespace
         const cUri = await FileSystem.getContentUriAsync(result.uri)
+        console.log(cUri)
         IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: cUri,
           flags: 1,

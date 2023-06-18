@@ -20,19 +20,24 @@ export const downloadFile = async (fileUrl, destinationPath) => {
     // Linking.openURL(newUri)
     if (Platform.OS === "android") {
       try {
+        console.log("TU SMO OPET")
         // eslint-disable-next-line import/namespace
         const cUri = await FileSystem.getContentUriAsync(result.uri)
         await IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
           data: cUri,
           flags: 1,
         })
+        console.log("ENSAR")
       } catch {
+        console.log("TU SMO OPET222")
         shareAsync(result.uri)
       }
     } else {
       shareAsync(result.uri)
     }
-  } catch {}
+  } catch {
+    console.log("TU SMO OPET333")
+  }
 }
 
 export const sortData = (data, sortType, sortOrder) => {

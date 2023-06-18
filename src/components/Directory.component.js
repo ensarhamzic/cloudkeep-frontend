@@ -1,6 +1,9 @@
 import React from "react"
 import { Entypo, AntDesign, MaterialIcons } from "@expo/vector-icons"
-import { DirectoryName, DirectoryPressable } from "../styles/directories.styles"
+import {
+  DirectoryName,
+  DirectoryTouchableOpacity,
+} from "../styles/directories.styles"
 import {
   FavoriteDirectoryView,
   SelectedDirectoryView,
@@ -28,7 +31,7 @@ export const Directory = ({
 
   const isSelected = selected.find((item) => item.id === directory.id)
   return (
-    <DirectoryPressable
+    <DirectoryTouchableOpacity
       onPress={directory.id > 0 ? handleDirectoryPress : null}
       onLongPress={directory.id > 0 ? handleDirectoryLongPress : null}
     >
@@ -59,6 +62,6 @@ export const Directory = ({
         }
       />
       <DirectoryName numberOfLines={2}>{directory.name}</DirectoryName>
-    </DirectoryPressable>
+    </DirectoryTouchableOpacity>
   )
 }

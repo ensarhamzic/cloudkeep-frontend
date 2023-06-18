@@ -5,12 +5,16 @@ import { AuthContext } from "../../services/auth/authContext"
 import { AppNavigator } from "./app.navigator"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { verifyTokenRequest } from "../../services/auth/auth.service"
-import { ActivityIndicator } from "react-native-paper"
-import { Text } from "react-native"
-import { CenteredActivityIndicator } from "../../styles/ui.styles"
-import { MoveContentNavigator } from "./moveContent.navigator"
+import {
+  CenteredActivityIndicator,
+  NotConnectedText,
+  NotConnectedView,
+} from "../../styles/ui.styles"
+import NetInfo from "@react-native-community/netinfo"
+import { UtilsContext } from "../../services/other/utils.context"
 
 export const Navigation = () => {
+  const { isConnected, setIsConnected } = useContext(UtilsContext)
   const [isInitial, setIsInitial] = useState(true)
 
   const { onAuth } = useContext(AuthContext)
@@ -31,14 +35,35 @@ export const Navigation = () => {
   }, [])
 
   const { user, isAuth } = useContext(AuthContext)
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected)
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
+
   return (
-    <NavigationContainer>
-      {isInitial && <CenteredActivityIndicator />}
-      {!isInitial && isAuth && user.verified ? (
-        <AppNavigator />
+    <>
+      {isConnected ? (
+        <NavigationContainer>
+          {isInitial && <CenteredActivityIndicator />}
+          {!isInitial && isAuth && user.verified ? (
+            <AppNavigator />
+          ) : (
+            !isInitial && <AuthNavigator />
+          )}
+        </NavigationContainer>
       ) : (
-        !isInitial && <AuthNavigator />
+        <NotConnectedView>
+          <NotConnectedText>
+            No Internet Connection. Connect to the internet to continue
+          </NotConnectedText>
+        </NotConnectedView>
       )}
-    </NavigationContainer>
+    </>
   )
 }

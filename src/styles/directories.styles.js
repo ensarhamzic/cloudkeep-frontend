@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { Button } from "react-native-paper"
 
-export const DirectoryPressable = styled.Pressable`
+export const DirectoryTouchableOpacity = styled.TouchableOpacity`
   flex: 1;
   justify-content: center;
   align-items: center;
@@ -9,7 +9,7 @@ export const DirectoryPressable = styled.Pressable`
   height: 180px;
 `
 
-export const FilePressable = styled.Pressable`
+export const FileTouchableOpacity = styled.TouchableOpacity`
   flex: 1;
   justify-content: center;
   align-items: center;

@@ -43,6 +43,7 @@ export const LoginForm = () => {
       if (response?.type === "success") {
         const accessToken = response?.authentication?.accessToken
         if (!accessToken) return
+        setIsLoading(true)
         const rsp = await fetch("https://www.googleapis.com/userinfo/v2/me", {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
@@ -50,6 +51,7 @@ export const LoginForm = () => {
         const r = await registerGoogleRequest(userInfo)
         if (r.error) setLoginError(r.message)
         else await onAuth(r)
+        setIsLoading(false)
       }
     })()
   }, [response])
@@ -121,9 +123,8 @@ export const LoginForm = () => {
         <AuthButtonSecondary
           mode="outlined"
           icon="google"
-          onPress={() => promptAsync()}
+          onPress={isLoading ? null : () => promptAsync()}
         >
-          {" "}
           Sign with Google
         </AuthButtonSecondary>
       </Spacer>

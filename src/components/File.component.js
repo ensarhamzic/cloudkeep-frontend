@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
   AntDesign,
   Feather,
@@ -7,7 +7,10 @@ import {
   MaterialIcons,
   FontAwesome5,
 } from "@expo/vector-icons"
-import { DirectoryName, FilePressable } from "../styles/directories.styles"
+import {
+  DirectoryName,
+  FileTouchableOpacity,
+} from "../styles/directories.styles"
 import { FileType } from "../utils/fileType"
 import {
   FavoriteFileView,
@@ -17,6 +20,7 @@ import {
 import { ContentType } from "../utils/contentType"
 import * as Haptics from "expo-haptics"
 import { DriveMode } from "../utils/driveMode"
+import { ActivityIndicator } from "react-native-paper"
 
 export const File = ({
   file,
@@ -24,6 +28,7 @@ export const File = ({
   onFileLongPress,
   selected,
   mode,
+  loading,
 }) => {
   const handleFilePress = () => {
     onFilePress(file.id)
@@ -80,7 +85,7 @@ export const File = ({
   }
 
   return (
-    <FilePressable
+    <FileTouchableOpacity
       onPress={file.id > 0 ? handleFilePress : null}
       onLongPress={file.id > 0 ? handleFileLongPress : null}
     >
@@ -103,8 +108,8 @@ export const File = ({
           />
         </SharedFileView>
       )}
-      {FileIcon}
+      {loading ? <ActivityIndicator size={size} color={color} /> : FileIcon}
       <DirectoryName numberOfLines={2}>{file.name}</DirectoryName>
-    </FilePressable>
+    </FileTouchableOpacity>
   )
 }

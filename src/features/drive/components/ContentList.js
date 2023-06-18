@@ -1,5 +1,5 @@
 import React, { useContext } from "react"
-import { FlatList, Text } from "react-native"
+import { FlatList } from "react-native"
 import { Directory } from "../../../components/Directory.component"
 import { File } from "../../../components/File.component"
 import { ContentType } from "../../../utils/contentType"
@@ -16,9 +16,11 @@ export const ContentList = ({
   selectedFiles,
   mode,
   contentToMove,
+  sortType,
+  sortOrder,
+  loadingFileId,
 }) => {
-  const { directories, files, sortType, sortOrder } =
-    useContext(DirectoriesContext)
+  const { directories, files } = useContext(DirectoriesContext)
   let dirs = directories ? [...directories] : []
   let fs = files ? [...files] : []
 
@@ -83,6 +85,7 @@ export const ContentList = ({
                 onFileLongPress={handleContentLongPress}
                 selected={selectedFiles}
                 mode={mode}
+                loading={loadingFileId === item.id}
               />
             )
           }}

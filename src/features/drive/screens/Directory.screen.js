@@ -34,6 +34,7 @@ import { Spacer } from "../../../components/Spacer.component"
 import Toast from "react-native-root-toast"
 import { useTheme } from "styled-components"
 import { DeleteContentModal } from "../components/DeleteContentModal.component"
+import { UtilsContext } from "../../../services/other/utils.context"
 
 export const DirectoryScreen = ({ route, navigation }) => {
   const theme = useTheme()
@@ -47,7 +48,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
     clearDirectories,
     onContentRestore,
   } = useContext(DirectoriesContext)
+  const { isConnected } = useContext(UtilsContext)
   const { token } = useContext(AuthContext)
+  const [loadingFileId, setLoadingFileId] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [directoryList, setDirectoryList] = useState([null])
@@ -106,7 +109,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     ;(async () => {
-      if (!token) return
+      if (!token || !isConnected) return
       setDirectoryList([null])
       if (searchQuery.length < 3 && mode === DriveMode.SEARCH) {
         clearDirectories()
@@ -142,11 +145,12 @@ export const DirectoryScreen = ({ route, navigation }) => {
       onDirectoriesLoad(data)
       setIsLoading(false)
     })()
-  }, [token, searchQuery, directoryId, mode])
+  }, [token, searchQuery, directoryId, mode, isConnected])
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       clearDirectories()
+      if (!isConnected) return
       setIsLoading(true)
       if (!directoryId) setDirectoryList([null])
       const data = await getDirectories(token, directoryId, mode, {
@@ -180,7 +184,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
     // Return the function to unsubscribe from the event so it gets removed on unmount
     return unsubscribe
-  }, [token, navigation, mode, directoryId, searchQuery])
+  }, [token, navigation, mode, directoryId, searchQuery, isConnected])
 
   useEffect(() => {
     clearDirectories(mode)
@@ -266,6 +270,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const addRemoveFavoritesHandler = async () => {
+    console.log("ensar")
     onAddRemoveFavorites(selectedContent)
     const response = await addRemoveFavorites(token, selectedContent)
     if (response.error) return
@@ -326,7 +331,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       headerRight: () => (
         <HeaderRight
           selectedContent={selectedContent}
-          onAddRemoveFavorite={addRemoveFavoritesHandler}
+          onAddRemoveFavorites={addRemoveFavoritesHandler}
           onRenamePress={renamePressHandler}
           onShareContent={shareContentHandler}
           mode={mode}
@@ -340,7 +345,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     ;(async () => {
-      if (isLoading || !token || isLoaded) return
+      if (isLoading || !token || isLoaded || !isConnected) return
       clearDirectories()
       if (!directoryId && mode === DriveMode.SEARCH) return
       setIsLoading(true)
@@ -371,7 +376,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       setIsLoading(false)
       setIsLoaded(true)
     })()
-  }, [token, isLoaded, directoryId])
+  }, [token, isLoaded, directoryId, isConnected])
 
   const handleDirectoryPress = (directoryId) => {
     setUploaded(false)
@@ -379,7 +384,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       handleContentLongPress({ id: directoryId, type: ContentType.DIRECTORY })
       return
     }
-    if (mode === DriveMode.TRASH) return
+    if (mode === DriveMode.TRASH || loadingFileId) return
 
     if (mode === DriveMode.MOVE) {
       navigation.navigate("Move", {
@@ -406,13 +411,15 @@ export const DirectoryScreen = ({ route, navigation }) => {
       handleContentLongPress({ id: fileId, type: ContentType.FILE })
       return
     }
-    if (mode === DriveMode.MOVE || mode === DriveMode.TRASH) return
+    if (mode === DriveMode.MOVE || mode === DriveMode.TRASH || loadingFileId)
+      return
+    setLoadingFileId(fileId)
     const file = files.find((file) => file.id === fileId)
-
     const fileUrl = await getDownloadURL(ref(storage, file.path))
     // get file extension from url
     const fileExtension = fileUrl.split(".").pop()
-    downloadFile(fileUrl, file.name + "." + fileExtension)
+    await downloadFile(fileUrl, file.name + "." + fileExtension)
+    setLoadingFileId(null)
   }
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -491,7 +498,8 @@ export const DirectoryScreen = ({ route, navigation }) => {
   }
 
   const handleContentLongPress = (content) => {
-    if (mode === DriveMode.MOVE || mode === DriveMode.SHARED) return
+    if (mode === DriveMode.MOVE || mode === DriveMode.SHARED || loadingFileId)
+      return
     setSelectedContent((prev) => {
       const foundItem = prev.find(
         (item) => item.id === content.id && item.type === content.type
@@ -577,6 +585,9 @@ export const DirectoryScreen = ({ route, navigation }) => {
           selectedFiles={selectedFiles}
           mode={mode}
           contentToMove={contentToMove}
+          sortType={sortType}
+          sortOrder={sortOrder}
+          loadingFileId={loadingFileId}
         />
       )}
       {mode === DriveMode.DRIVE && (

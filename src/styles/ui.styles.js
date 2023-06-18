@@ -205,3 +205,16 @@ export const UpdateProfilePictureImage = styled.Image`
   height: 100px;
   border-radius: 100px;
 `
+
+export const NotConnectedView = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+`
+
+export const NotConnectedText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+`

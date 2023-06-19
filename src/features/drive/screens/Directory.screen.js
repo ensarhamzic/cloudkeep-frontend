@@ -325,7 +325,7 @@ export const DirectoryScreen = ({ route, navigation }) => {
       return
     }
     navigation.setOptions({
-      title: `${selectedContentLength} selected`,
+      title: "",
       headerTitleAlign: "left",
       headerLeft: () => <BackButton onBackPress={goBack} cancel />,
       headerRight: () => (

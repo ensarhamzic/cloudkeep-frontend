@@ -49,7 +49,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^9.2.0",
-    "styled-components": "^5.3.9"
+    "styled-components": "^5.3.9",
+    "expo-updates": "~0.16.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

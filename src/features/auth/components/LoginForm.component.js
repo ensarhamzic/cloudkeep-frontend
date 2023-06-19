@@ -16,7 +16,11 @@ import { useNavigation } from "@react-navigation/native"
 import * as WebBrowser from "expo-web-browser"
 // eslint-disable-next-line import/namespace
 import * as Google from "expo-auth-session/providers/google"
-import { ANDROID_GOOGLE_CLIENT_ID, IOS_GOOGLE_CLIENT_ID } from "../../../../env"
+import {
+  ANDROID_GOOGLE_CLIENT_ID,
+  IOS_GOOGLE_CLIENT_ID,
+  EXPO_GOOGLE_CLIENT_ID,
+} from "../../../../env"
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -36,6 +40,7 @@ export const LoginForm = () => {
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: IOS_GOOGLE_CLIENT_ID,
     androidClientId: ANDROID_GOOGLE_CLIENT_ID,
+    expoClientId: EXPO_GOOGLE_CLIENT_ID,
   })
 
   useEffect(() => {

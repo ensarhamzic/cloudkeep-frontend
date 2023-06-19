@@ -2,6 +2,7 @@
   "expo": {
     "name": "CloudKeep",
     "slug": "CloudKeep",
+    "scheme": "cloudkeep",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,6 +35,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7b900509-6b1a-48a7-bd21-47f89903e705"
+      }
     }
   }
 }

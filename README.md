@@ -1,6 +1,6 @@
-# CloudKeep
+<img src="https://github.com/ensarhamzic/cloudkeep-frontend/blob/main/readme-assets/logo-full.png"  width="300" alt="Logo">
 
-This is the frontend application of CloudKeep.
+This is frontend of CloudKeep Android and IOS application.
 
 ## Description
 
@@ -19,6 +19,13 @@ CloudKeep is a React Native application that serves as a clone of Google Drive. 
 - Moving content from one directory to another
 - Google Login
 - File Trash
+
+## App Screenshots
+<p float="left">
+  <img src="https://github.com/ensarhamzic/cloudkeep-frontend/blob/main/readme-assets/1.jpg"  width="300" alt="Login screen">
+  <img src="https://github.com/ensarhamzic/cloudkeep-frontend/blob/main/readme-assets/2.jpg"  width="300" alt="Drive screen">
+  <img src="https://github.com/ensarhamzic/cloudkeep-frontend/blob/main/readme-assets/3.jpg"  width="300" alt="Profile screen">
+</p>
 
 ## Other information
 For experiencing full features of the app, you may need this [backend](https://github.com/ensarhamzic/cloudkeep-backend) done in Java Spring Boot

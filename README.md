@@ -16,6 +16,7 @@ CloudKeep is a React Native application that serves as a clone of Google Drive. 
 - Search functionality
 - Add items to favorites
 - Share files with others
+- Moving content from one directory to another
 - Google Login
 - File Trash
 
